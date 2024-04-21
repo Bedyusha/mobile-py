@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.app import MDApp
 from kivymd.uix.button import MDRaisedButton
-from kivymd.uix.navigationdrawer import MDNavigationDrawer
+from kivymd.uix.navigationdrawer import MDNavigationDrawer, MDNavigationLayout
 from kivymd.uix.list import MDList, OneLineListItem
 from kivymd.uix.button import MDIconButton
 from kivy.utils import get_color_from_hex
@@ -41,8 +41,10 @@ class MainApp(MDApp):
         # Создаем список для Navigation Drawer
         self.nav_drawer = MDNavigationDrawer()
         list_drawer = MDList()
-        for i in range(5):
-            list_drawer.add_widget(OneLineListItem(text=f'Button {i+1}'))
+        button_names = ['Профиль питомца', 'Button 2', 'Button 3', 'Button 4', 'Button 5', 'Вернуться на главную страницу']
+        buttons = [OneLineListItem(text=name) for name in button_names]
+        for button in buttons:
+            list_drawer.add_widget(button)
         self.nav_drawer.add_widget(list_drawer)
 
         # Создаем ScreenManager и добавляем в него экран
@@ -52,7 +54,6 @@ class MainApp(MDApp):
             text="Hello, World",
             pos_hint={"center_x": 0.5, "center_y": 0.5},
         ))
-        screen.add_widget(self.nav_drawer)
 
         # Добавляем кнопку для переключения темы
         theme_button = MDIconButton(icon="lightbulb-on-outline",
@@ -60,21 +61,29 @@ class MainApp(MDApp):
                                      on_release=self.switch_theme)
         screen.add_widget(theme_button)
 
-        # Добавляем экран профиля питомца
-
-
         # Привязываем первую кнопку в списке к переключению на экран профиля питомца
         def switch_to_pet_profile(*args):
             sm.current = 'pet_profile'
         
-        list_drawer.children[0].bind(on_release=switch_to_pet_profile)
+        buttons[0].bind(on_release=switch_to_pet_profile)
+
+        # Привязываем кнопку "Вернуться на главную страницу" к переключению на главный экран
+        def switch_to_main_screen(*args):
+            sm.current = 'screen'
+        
+        buttons[-1].bind(on_release=switch_to_main_screen)
 
         sm.add_widget(screen)
 
         pet_profile_screen = PetProfileScreen()
         sm.add_widget(pet_profile_screen)
+
+        # Создаем MDNavigationLayout и добавляем в него ScreenManager и NavigationDrawer
+        nav_layout = MDNavigationLayout()
+        nav_layout.add_widget(sm)
+        nav_layout.add_widget(self.nav_drawer)
         
-        return sm
+        return nav_layout
 
     def switch_theme(self, *args):
         self.theme_cls.theme_style = "Light" if self.theme_cls.theme_style == "Dark" else "Dark"
