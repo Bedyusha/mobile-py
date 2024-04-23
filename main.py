@@ -13,22 +13,72 @@ from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.behaviors import ButtonBehavior
+from kivymd.uix.label import MDLabel
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivy.core.text import LabelBase
+from kivy.core.window import Window
+
+# LabelBase.register(name='Roboto',
+#                    fn_regular='Roboto-Thin.ttf',
+#                    fn_bold='Roboto-Medium.ttf')
 
 class ImageButton(ButtonBehavior, Image):
     pass
+
 class PetProfileScreen(Screen):
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)
         self.name = 'pet_profile'
         self.layout = BoxLayout(orientation='horizontal')
+        self.info_layout = BoxLayout(orientation='vertical', size_hint=(0.6, 1))
+        self.layout.add_widget(self.info_layout)
+
         # Загрузить сохраненный путь к изображению, если он существует
         self.image_path = self.load_image_path()
-        self.image = ImageButton(source=self.image_path, size_hint=(0.5, 1))
+        self.image = ImageButton(source=self.image_path, size_hint=(None, None), size=(200, 200), pos_hint={'top': 1, 'left': 1})
+        # Установить минимальный и максимальный размер изображения
+        self.image.size_hint_min = (100, 100)  # Минимальный размер 100x100 пикселей
+        self.image.size_hint_max = (300, 300)  # Максимальный размер 500x500 пикселей
         self.image.bind(on_release=self.open_file_chooser)
         self.layout.add_widget(self.image)
-        self.text_input = TextInput(hint_text='Введите имя питомца', size_hint=(0.5, 1))
-        self.layout.add_widget(self.text_input)
+
+        # Загрузить сохраненную информацию о питомце, если она существует
+        self.pet_info = self.load_pet_info()
+
+        # Создать метки и текстовые поля для ввода информации о питомце
+        self.create_label_and_textinput('Кличка питомца:', 'pet_name')
+        self.create_label_and_textinput('Возраст:', 'pet_age')
+        self.create_label_and_textinput('Порода:', 'pet_breed')
+        self.create_label_and_textinput('Хозяин:', 'owner_name')
+
         self.add_widget(self.layout)
+
+    def create_label_and_textinput(self, label_text, info_key):
+        # Создать метку
+        label = MDLabel(text=label_text, size_hint=(1, 1))
+        self.info_layout.add_widget(label)
+
+        # Создать текстовое поле для ввода
+        text_input = TextInput(text=self.pet_info.get(info_key, ''), size_hint=(1, 1), background_color=(0.3, 0.3, 0.3, 1), foreground_color=(1, 1, 1, 1))
+        text_input.bind(text=self.save_pet_info(info_key))
+        self.info_layout.add_widget(text_input)
+        
+    def save_pet_info(self, info_key):
+        def save_text(instance, value):
+            # Сохранить значение текстового поля для ввода в информацию о питомце
+            self.pet_info[info_key] = value
+            # Сохранить информацию о питомце в файле
+            with open('pet_info.json', 'w') as f:
+                json.dump(self.pet_info, f)
+        return save_text
+
+    def load_pet_info(self):
+        # Загрузить информацию о питомце из файла, если он существует
+        if os.path.exists('pet_info.json'):
+            with open('pet_info.json', 'r') as f:
+                return json.load(f)
+        # Вернуть пустой словарь, если файл не существует
+        return {}
 
     def open_file_chooser(self, *args):
         self.file_chooser = FileChooserIconView(size_hint=(1, 0.4))
@@ -60,6 +110,7 @@ class PetProfileScreen(Screen):
     
 class MainApp(MDApp):
     def build(self):
+        Window.size = (400, 700) 
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
 
