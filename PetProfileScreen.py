@@ -11,7 +11,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivymd.uix.label import MDLabel
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.textfield import MDTextField
-
+from kivy.uix.boxlayout import BoxLayout
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -44,31 +44,27 @@ class PetProfileScreen(Screen):
         self.text_inputs['pet_breed'] = self.create_label_and_textinput('Порода:', 'pet_breed')
         self.text_inputs['owner_name'] = self.create_label_and_textinput('Хозяин:', 'owner_name')
 
-        # Создать кнопку "Сохранить"
-        save_button = MDRaisedButton(text="Сохранить", pos_hint={"center_x": 0.5}, size_hint=(None, None), size=(300, 50))
-        save_button.bind(on_release=self.save_all_info)
-        self.layout.add_widget(save_button)
-
         self.add_widget(self.layout)
 
     def create_label_and_textinput(self, label_text, info_key):
         # Создать метку
-        label = MDLabel(text=label_text, size_hint=(1, None), height=30)
+        label = MDLabel(text=label_text, size_hint=(1, None), height=35)
         self.info_layout.add_widget(label)
 
         # Создать текстовое поле для ввода
-        text_input = MDTextField(text=self.pet_info.get(info_key, ''), size_hint=(1, None), height=30, mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
+        text_input = MDTextField(text=self.pet_info.get(info_key, ''), size_hint=(1, None), font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
+        text_input.bind(text=self.save_pet_info(info_key))  # Привязать функцию save_pet_info к событию изменения текста
         self.info_layout.add_widget(text_input)
         return text_input
-    
-    def save_all_info(self, *args):
-        # Сохранить информацию из всех текстовых полей
-        for info_key, text_input in self.text_inputs.items():
-            self.pet_info[info_key] = text_input.text
 
-        # Сохранить информацию о питомце в файле
-        with open('pet_info.json', 'w') as f:
-            json.dump(self.pet_info, f)
+    def save_pet_info(self, info_key):
+        def save_text(instance, value):
+            # Сохранить значение текстового поля для ввода в информацию о питомце
+            self.pet_info[info_key] = value
+            # Сохранить информацию о питомце в файле
+            with open('pet_info.json', 'w') as f:
+                json.dump(self.pet_info, f)
+        return save_text
 
     def load_pet_info(self):
         # Загрузить информацию о питомце из файла, если он существует

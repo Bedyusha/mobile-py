@@ -8,6 +8,8 @@ from kivymd.uix.button import MDIconButton
 from kivy.utils import get_color_from_hex
 from kivy.core.window import Window
 from kivymd.uix.button import MDIconButton
+from kivy.uix.boxlayout import BoxLayout
+
 
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
@@ -20,14 +22,14 @@ class MainApp(MDApp):
         Window.size = (400, 700) 
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
-
+################################################кнопка переключения темы широковата##################################################
         # Создаем список для Navigation Drawer
         self.nav_drawer = MDNavigationDrawer()
 
         # Добавляем кнопку для переключения темы
-        theme_button = MDIconButton(icon="lightbulb-on-outline", pos_hint={"right": 1, "top": 1}, on_release=self.switch_theme)
+        theme_button = MDIconButton(icon="lightbulb-on-outline", pos_hint={"left": 1, "top": 1}, on_release=self.switch_theme)
         self.nav_drawer.add_widget(theme_button)
-
+#####################################################################################################################################
         list_drawer = MDList()
         button_names = ['Профиль питомца', 'Button 2', 'Button 3', 'Дресировка', 'Советы на особый случай', 'Вернуться на главную страницу']
         buttons = [OneLineListItem(text=name) for name in button_names]
@@ -43,17 +45,12 @@ class MainApp(MDApp):
             pos_hint={"center_x": 0.5, "center_y": 0.5},
         ))
 
-        # Добавляем кнопку для переключения темы
-        theme_button = MDIconButton(icon="lightbulb-on-outline",
-                                     pos_hint={"right": 1, "top": 1},
-                                     on_release=self.switch_theme)
-        screen.add_widget(theme_button)
-
         # Привязываем первую кнопку в списке к переключению на экран профиля питомца
         def switch_to_pet_profile(*args):
             sm.current = 'pet_profile'
         
         buttons[0].bind(on_release=switch_to_pet_profile)
+        
 ##########################################################################################################
         # Привязываем кнопку "Советы на особый случай" к переключению на экран советов
         def switch_to_advice_screen(*args):
