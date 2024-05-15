@@ -81,8 +81,9 @@ class PetProfileScreen(Screen):
                 # Проверить, является ли дата валидной
                 try:
                     date = datetime.strptime(self.pet_info['day'] + ', ' + self.pet_info['month'] + ', ' + self.pet_info['year'], '%d, %m, %Y')
-                    if date.year > 2000 or date > datetime.now():
+                    if date.year < 2000 or date > datetime.now():
                         instance.text = ''
+                        ####ТУТ КОД ДЛЯ УВЕДОМЛЕНИ ПРИ НЕПРАВИЛЬНОМ ВВОДЕ ДАТЫ + еще надо сделать проверку на месяца и дни
                 except ValueError:
                     pass
             else:
