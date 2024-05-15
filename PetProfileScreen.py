@@ -1,26 +1,23 @@
 import os
 import json
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen
 from kivy.utils import get_color_from_hex
 from kivy.uix.image import Image
-from kivy.uix.textinput import TextInput
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.uix.behaviors import ButtonBehavior
-from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.textfield import MDTextField
 from kivy.uix.boxlayout import BoxLayout
+from datetime import datetime
 
 class ImageButton(ButtonBehavior, Image):
     pass
-
 class PetProfileScreen(Screen):
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)
         self.name = 'pet_profile'
-        self.layout = BoxLayout(orientation='vertical', padding=10)
+        self.layout = BoxLayout(orientation='vertical', padding=10, spacing=20)  # Увеличен отступ между виджетами
 
         # Загрузить сохраненный путь к изображению, если он существует
         self.image_path = self.load_image_path()
@@ -31,7 +28,7 @@ class PetProfileScreen(Screen):
         self.image.bind(on_release=self.open_file_chooser)
         self.layout.add_widget(self.image)
 
-        self.info_layout = BoxLayout(orientation='vertical', size_hint=(1, 0.8), padding=[10, 20, 10, 20])
+        self.info_layout = BoxLayout(orientation='vertical', size_hint=(1, 0.8), padding=[10, 20, 10, 20], spacing=30)  # Увеличен отступ между виджетами
         self.layout.add_widget(self.info_layout)
 
         # Загрузить сохраненную информацию о питомце, если она существует
@@ -39,20 +36,64 @@ class PetProfileScreen(Screen):
 
         # Создать метки и текстовые поля для ввода информации о питомце
         self.text_inputs = {}
-        self.text_inputs['pet_name'] = self.create_label_and_textinput('Кличка питомца:', 'pet_name')
-        self.text_inputs['pet_age'] = self.create_label_and_textinput('Возраст:', 'pet_age')
-        self.text_inputs['pet_breed'] = self.create_label_and_textinput('Порода:', 'pet_breed')
-        self.text_inputs['owner_name'] = self.create_label_and_textinput('Хозяин:', 'owner_name')
+        self.text_inputs['pet_name'] = self.create_textinput('Кличка питомца:', 'pet_name')
+        self.text_inputs['pet_breed'] = self.create_textinput('Порода:', 'pet_breed')
+        self.text_inputs['owner_name'] = self.create_textinput('Хозяин:', 'owner_name')
+
+        # Добавить поля для ввода даты рождения
+        self.create_label_and_textinput('Дата рождения:', 'pet_birthday')
 
         self.add_widget(self.layout)
 
     def create_label_and_textinput(self, label_text, info_key):
-        # Создать метку
-        label = MDLabel(text=label_text, size_hint=(1, None), height=35)
-        self.info_layout.add_widget(label)
+        # Создать текстовые поля для ввода даты
+        if info_key == 'pet_birthday':
+            date_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=35)
+            self.text_inputs['day'] = self.create_date_input('День', 'day')
+            self.text_inputs['month'] = self.create_date_input('Месяц', 'month')
+            self.text_inputs['year'] = self.create_date_input('Год', 'year')
+            date_layout.add_widget(self.text_inputs['day'])
+            date_layout.add_widget(self.text_inputs['month'])
+            date_layout.add_widget(self.text_inputs['year'])
+            self.info_layout.add_widget(date_layout)
+            return date_layout  # Возвращаем layout с полями для ввода даты
+        else:
+            text_input = MDTextField(text=self.pet_info.get(info_key, ''), hint_text=label_text, size_hint=(1, None), font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
+            text_input.bind(text=self.save_pet_info(info_key))  # Привязать функцию save_pet_info к событию изменения текста
+            self.info_layout.add_widget(text_input)
+            return text_input
 
+    def create_date_input(self, hint_text, info_key):
+        # Создать текстовое поле для ввода даты
+        text_input = MDTextField(text=self.pet_info.get(info_key, ''), hint_text=hint_text, size_hint=(None, None), width=60, font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
+        text_input.bind(text=self.validate_and_save_date(info_key))  # Привязать функцию validate_and_save_date к событию изменения текста
+        return text_input
+
+    def validate_and_save_date(self, info_key):
+        def save_date(instance, value):
+            # Проверить, является ли значение числом
+            if value.isdigit():
+                # Сохранить значение текстового поля для ввода в информацию о питомце
+                self.pet_info[info_key] = value
+                # Сохранить информацию о питомце в файле
+                with open('pet_info.json', 'w') as f:
+                    json.dump(self.pet_info, f)
+                # Проверить, является ли дата валидной
+                try:
+                    date = datetime.strptime(self.pet_info['day'] + ', ' + self.pet_info['month'] + ', ' + self.pet_info['year'], '%d, %m, %Y')
+                    if date.year > 2000 or date > datetime.now():
+                        instance.text = ''
+                except ValueError:
+                    pass
+            else:
+                # Очистить текстовое поле, если значение не является числом
+                instance.text = ''
+        return save_date
+
+
+    def create_textinput(self, hint_text, info_key):
         # Создать текстовое поле для ввода
-        text_input = MDTextField(text=self.pet_info.get(info_key, ''), size_hint=(1, None), font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
+        text_input = MDTextField(text=self.pet_info.get(info_key, ''), hint_text=hint_text, size_hint=(1, None), font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
         text_input.bind(text=self.save_pet_info(info_key))  # Привязать функцию save_pet_info к событию изменения текста
         self.info_layout.add_widget(text_input)
         return text_input
