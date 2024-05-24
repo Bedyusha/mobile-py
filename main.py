@@ -19,23 +19,25 @@ from PetProfileScreen import PetProfileScreen
 
 class MainApp(MDApp):
     def build(self):
-        Window.size = (400, 700) 
+        Window.size = (400, 750) 
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
+
+        list_drawer = MDList()
+        button_names = ['Профиль питомца', 'Button 2', 'Button 3', 'Дресировка', 'Советы на особый случай', 'На главную страницу']
+        buttons = [OneLineListItem(text=name) for name in button_names]
+        for button in buttons:
+            list_drawer.add_widget(button)
+
 ################################################кнопка переключения темы широковата##################################################
         # Создаем список для Navigation Drawer
         self.nav_drawer = MDNavigationDrawer()
 
         # Добавляем кнопку для переключения темы
-        theme_button = MDIconButton(icon="lightbulb-on-outline", pos_hint={"left": 1, "top": 1}, on_release=self.switch_theme)
+        theme_button = MDIconButton(icon="lightbulb-on-outline", pos_hint={"right": 1, "top": 1}, on_release=self.switch_theme)
+        self.nav_drawer.add_widget(list_drawer)
         self.nav_drawer.add_widget(theme_button)
 #####################################################################################################################################
-        list_drawer = MDList()
-        button_names = ['Профиль питомца', 'Button 2', 'Button 3', 'Дресировка', 'Советы на особый случай', 'Вернуться на главную страницу']
-        buttons = [OneLineListItem(text=name) for name in button_names]
-        for button in buttons:
-            list_drawer.add_widget(button)
-        self.nav_drawer.add_widget(list_drawer)
 
         # Создаем ScreenManager и добавляем в него экран
         sm = ScreenManager()

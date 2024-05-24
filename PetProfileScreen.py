@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from kivy.uix.screenmanager import Screen
 from kivy.utils import get_color_from_hex
 from kivy.uix.image import Image
@@ -10,9 +11,13 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivymd.uix.textfield import MDTextField
 from kivy.uix.boxlayout import BoxLayout
 from datetime import datetime
+from kivymd.uix.snackbar import Snackbar
+from kivy.uix.button import Button
+from kivymd.uix.pickers import MDDatePicker
 
 class ImageButton(ButtonBehavior, Image):
     pass
+
 class PetProfileScreen(Screen):
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)
@@ -43,7 +48,24 @@ class PetProfileScreen(Screen):
         # Добавить поля для ввода даты рождения
         self.create_label_and_textinput('Дата рождения:', 'pet_birthday')
 
+        # Загрузить и отобразить сохраненную дату рождения
+        if 'birth_date' in self.pet_info:
+            year, month, day = self.pet_info['birth_date'].split('-')
+            self.text_inputs['day'].text = day
+            self.text_inputs['month'].text = month
+            self.text_inputs['year'].text = year
+
         self.add_widget(self.layout)
+
+    def save_date(self, instance, the_date, the_time):
+        self.pet_info['birth_date'] = str(the_date)
+        with open('pet_info.json', 'w') as json_file:
+            json.dump(self.pet_info, json_file)
+        # Обновить текстовые поля после сохранения даты
+        year, month, day = str(the_date).split('-')
+        self.text_inputs['day'].text = day
+        self.text_inputs['month'].text = month
+        self.text_inputs['year'].text = year
 
     def create_label_and_textinput(self, label_text, info_key):
         # Создать текстовые поля для ввода даты
@@ -66,36 +88,36 @@ class PetProfileScreen(Screen):
     def create_date_input(self, hint_text, info_key):
         # Создать текстовое поле для ввода даты
         text_input = MDTextField(text=self.pet_info.get(info_key, ''), hint_text=hint_text, size_hint=(None, None), width=60, font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
-        text_input.bind(text=self.validate_and_save_date(info_key))  # Привязать функцию validate_and_save_date к событию изменения текста
+        text_input.bind(on_touch_down=self.show_date_picker)  # Привязать функцию show_date_picker к событию изменения фокуса
         return text_input
 
-    def validate_and_save_date(self, info_key):
-        def save_date(instance, value):
-            # Проверить, является ли значение числом
-            if value.isdigit():
+    def show_date_picker(self, instance, touch):
+        if instance.collide_point(*touch.pos):
+            date_picker = MDDatePicker()
+            date_picker.bind(on_save=self.save_date)
+            date_picker.open()
+
+
+    def validate_and_save_text(self, info_key):
+        def save_text(instance, value):
+            # Проверить, является ли значение допустимым (только буквы, тире и пробелы)
+            if re.match(r'^[a-zA-Zа-яА-Я\s-]*$', value):
+                # Сделать первую букву заглавной
+                value = value.capitalize()
                 # Сохранить значение текстового поля для ввода в информацию о питомце
                 self.pet_info[info_key] = value
                 # Сохранить информацию о питомце в файле
                 with open('pet_info.json', 'w') as f:
                     json.dump(self.pet_info, f)
-                # Проверить, является ли дата валидной
-                try:
-                    date = datetime.strptime(self.pet_info['day'] + ', ' + self.pet_info['month'] + ', ' + self.pet_info['year'], '%d, %m, %Y')
-                    if date.year < 2000 or date > datetime.now():
-                        instance.text = ''
-                        ####ТУТ КОД ДЛЯ УВЕДОМЛЕНИ ПРИ НЕПРАВИЛЬНОМ ВВОДЕ ДАТЫ + еще надо сделать проверку на месяца и дни
-                except ValueError:
-                    pass
             else:
-                # Очистить текстовое поле, если значение не является числом
+                # Очистить текстовое поле, если значение не является допустимым
                 instance.text = ''
-        return save_date
-
-
+        return save_text
+        
     def create_textinput(self, hint_text, info_key):
         # Создать текстовое поле для ввода
         text_input = MDTextField(text=self.pet_info.get(info_key, ''), hint_text=hint_text, size_hint=(1, None), font_size='15sp', mode="rectangle", line_color_normal=get_color_from_hex("#2C2C2C"), line_color_focus=get_color_from_hex("#2C2C2C"))
-        text_input.bind(text=self.save_pet_info(info_key))  # Привязать функцию save_pet_info к событию изменения текста
+        text_input.bind(text=self.validate_and_save_text(info_key))  # Привязать функцию validate_and_save_text к событию изменения текста
         self.info_layout.add_widget(text_input)
         return text_input
 
