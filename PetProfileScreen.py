@@ -10,10 +10,11 @@ from kivy.uix.popup import Popup
 from kivy.uix.behaviors import ButtonBehavior
 from kivymd.uix.textfield import MDTextField
 from kivy.uix.boxlayout import BoxLayout
-from datetime import datetime
-from kivymd.uix.snackbar import Snackbar
-from kivy.uix.button import Button
 from kivymd.uix.pickers import MDDatePicker
+from kivy.uix.spinner import Spinner
+from kivymd.uix.dropdownitem import MDDropDownItem
+from kivymd.uix.menu import MDDropdownMenu
+
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -23,6 +24,7 @@ class PetProfileScreen(Screen):
         super(PetProfileScreen, self).__init__(**kwargs)
         self.name = 'pet_profile'
         self.layout = BoxLayout(orientation='vertical', padding=10, spacing=20)  # Увеличен отступ между виджетами
+        self.pet_info = self.load_pet_info()
 
         # Загрузить сохраненный путь к изображению, если он существует
         self.image_path = self.load_image_path()
@@ -35,6 +37,19 @@ class PetProfileScreen(Screen):
 
         self.info_layout = BoxLayout(orientation='vertical', size_hint=(1, 0.8), padding=[10, 20, 10, 20], spacing=30)  # Увеличен отступ между виджетами
         self.layout.add_widget(self.info_layout)
+
+        self.pet_type_spinner = Spinner(
+            # доступные значения
+            values=('Кот', 'Собака'),
+            # первоначально выбранное значение
+            text=self.pet_info.get('pet_type', 'Кот'),
+            # размер
+            size_hint=(1, None),
+            height=30
+        )
+        # Привязать функцию save_pet_type к событию изменения значения
+        self.pet_type_spinner.bind(text=self.save_pet_type)
+        self.info_layout.add_widget(self.pet_type_spinner)
 
         # Загрузить сохраненную информацию о питомце, если она существует
         self.pet_info = self.load_pet_info()
@@ -56,6 +71,13 @@ class PetProfileScreen(Screen):
             self.text_inputs['year'].text = year
 
         self.add_widget(self.layout)
+
+    def save_pet_type(self, instance, value):
+        # Сохранить выбранный тип питомца в информацию о питомце
+        self.pet_info['pet_type'] = value
+        # Сохранить информацию о питомце в файле
+        with open('pet_info.json', 'w') as f:
+            json.dump(self.pet_info, f)
 
     def save_date(self, instance, the_date, the_time):
         self.pet_info['birth_date'] = str(the_date)
@@ -134,12 +156,18 @@ class PetProfileScreen(Screen):
         # Загрузить информацию о питомце из файла, если он существует
         if os.path.exists('pet_info.json'):
             with open('pet_info.json', 'r') as f:
-                return json.load(f)
+                try:
+                    return json.load(f)
+                except json.JSONDecodeError:
+                    # Вернуть пустой словарь, если файл пустой или содержит недопустимый JSON
+                    return {}
         # Вернуть пустой словарь, если файл не существует
         return {}
 
     def open_file_chooser(self, *args):
         self.file_chooser = FileChooserIconView(size_hint=(1, 0.4))
+        # Добавьте фильтры для изображений
+        self.file_chooser.filters = ['*.jpg', '*.png', '*.jpeg', '*.gif']
         self.file_chooser.bind(on_submit=self.load_image)
         self.popup = Popup(title='Выберите изображение', content=self.file_chooser, size_hint=(0.9, 0.9))
         self.popup.open()

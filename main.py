@@ -9,13 +9,20 @@ from kivy.utils import get_color_from_hex
 from kivy.core.window import Window
 from kivymd.uix.button import MDIconButton
 from kivy.uix.boxlayout import BoxLayout
-
+from kivy.core.text import LabelBase, DEFAULT_FONT
+from kivy.resources import resource_add_path
 
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
-# LabelBase.register(name='Roboto',
-#                    fn_regular='Roboto-Thin.ttf',
-#                    fn_bold='Roboto-Medium.ttf')
+
+LabelBase.register(name='Ubuntu',
+                   fn_regular='fonts\\Ubuntu-Regular.ttf',
+                   fn_bold='fonts\\Ubuntu-Bold.ttf')
+
+resource_add_path('D:\\git\\mobile-py\\fonts')
+
+# Зарегистрируйте шрифт (вы можете добавить больше вариантов шрифта, если они доступны)
+LabelBase.register(DEFAULT_FONT, "Ubuntu-Regular.ttf")
 
 class MainApp(MDApp):
     def build(self):
