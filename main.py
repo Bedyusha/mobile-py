@@ -11,9 +11,11 @@ from kivymd.uix.button import MDIconButton
 from kivy.uix.boxlayout import BoxLayout
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
-
+#Импорты основных окон
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
+#Импорты окон совета advice_screen
+from advice.birth_screen import BirthScreen
 
 LabelBase.register(name='Ubuntu',
                    fn_regular='fonts\\Ubuntu-Regular.ttf',
@@ -80,6 +82,9 @@ class MainApp(MDApp):
 
         advice_screen = AdviceScreen(name='advice')
         sm.add_widget(advice_screen)
+
+        birth_screen = BirthScreen(name='birth_screen')
+        sm.add_widget(birth_screen)
 
         # Создаем MDNavigationLayout и добавляем в него ScreenManager и NavigationDrawer
         nav_layout = MDNavigationLayout()

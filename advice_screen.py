@@ -1,5 +1,5 @@
 # advice_screen.py
-from kivy.uix.screenmanager import Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.uix.label import MDLabel
 from kivymd.uix.list import OneLineListItem
 from kivymd.uix.textfield import MDTextField
@@ -37,7 +37,7 @@ class AdviceScreen(Screen):
         self.scroll_view.add_widget(self.list_layout)
         layout.add_widget(self.scroll_view)
 
-        self.items = ["Роды питомца", "Выпадение зубов", "Укус клеща", "Рвота у питомца", "Что еще"]
+        self.items = ["Роды питомца", "Выпадение зубов", "Укус клеща", "Рвота у питомца", "Стрижка когтей"]
         self.update_list()
 
     def on_text(self, instance, value):
@@ -48,4 +48,9 @@ class AdviceScreen(Screen):
         for item in self.items:
             if self.search_field.text.lower() in item.lower():
                 list_item = OneLineListItem(text=item)
+                list_item.bind(on_release=self.change_screen)
                 self.list_layout.add_widget(list_item)
+
+    def change_screen(self, instance):
+        if instance.text == "Роды питомца":
+            self.manager.current = 'birth_screen'
