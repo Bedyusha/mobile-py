@@ -53,4 +53,8 @@ class AdviceScreen(Screen):
 
     def change_screen(self, instance):
         if instance.text == "Роды питомца":
-            self.manager.current = 'birth_screen'
+            self.manager.current = 'birth_screen_cat'
+        if instance.text == "Выпадение зубов":
+            self.manager.current = 'teeth'
+        if instance.text == "Укус клеща":
+            self.manager.current = 'tick_bite'

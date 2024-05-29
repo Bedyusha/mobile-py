@@ -15,7 +15,9 @@ from kivy.resources import resource_add_path
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
 #Импорты окон совета advice_screen
-from advice.birth_screen import BirthScreen
+from advice.birth_screen_cat import BirthScreen
+from advice.teeth import Teeth
+from advice.tick_bite import Tick_bite
 
 LabelBase.register(name='Ubuntu',
                    fn_regular='fonts\\Ubuntu-Regular.ttf',
@@ -33,7 +35,7 @@ class MainApp(MDApp):
         self.theme_cls.primary_palette = "Orange"
 
         list_drawer = MDList()
-        button_names = ['Профиль питомца', 'Button 2', 'Button 3', 'Дресировка', 'Советы на особый случай', 'На главную страницу']
+        button_names = ['Профиль питомца', 'Button 2', 'График питания', 'Дресировка', 'Советы на особый случай', 'На главную страницу']
         buttons = [OneLineListItem(text=name) for name in button_names]
         for button in buttons:
             list_drawer.add_widget(button)
@@ -83,8 +85,14 @@ class MainApp(MDApp):
         advice_screen = AdviceScreen(name='advice')
         sm.add_widget(advice_screen)
 
-        birth_screen = BirthScreen(name='birth_screen')
-        sm.add_widget(birth_screen)
+        birth_screen_cat = BirthScreen(name='birth_screen_cat')
+        sm.add_widget(birth_screen_cat)
+
+        teeth = Teeth(name='teeth')
+        sm.add_widget(teeth)
+
+        tick_bite = Tick_bite(name='tick_bite')
+        sm.add_widget(tick_bite)
 
         # Создаем MDNavigationLayout и добавляем в него ScreenManager и NavigationDrawer
         nav_layout = MDNavigationLayout()
