@@ -10,7 +10,7 @@ from kivy.uix.widget import Widget
 class BirthScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.layout = BoxLayout(orientation='vertical', padding=[10, 50, 10, 10])
+        self.layout = BoxLayout(orientation='vertical', padding=[10, 10, 10, 10])
         self.add_widget(self.layout)
 
         self.label = MDLabel(
@@ -29,6 +29,8 @@ class BirthScreen(Screen):
             halign="center",
             theme_text_color="Secondary",
             font_style="Body1",
+            height="20dp"
+            
         )
         self.layout.add_widget(self.text)
 
@@ -39,7 +41,8 @@ class BirthScreen(Screen):
             text="Назад",
             pos_hint={"center_x": 0.5},
             size_hint=(0.5, 1),
-            disabled=True  # Кнопка "Назад" отключена на первом шаге
+            disabled=True,  # Кнопка "Назад" отключена на первом шаге
+            
         )
         self.back_button.bind(on_release=self.previous_step)
         button_layout.add_widget(self.back_button)

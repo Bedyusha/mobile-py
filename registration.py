@@ -4,8 +4,9 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
 from kivy.uix.label import Label
 from kivy.utils import get_color_from_hex
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDRectangleFlatButton
 from kivy.uix.widget import Widget
+from kivymd.uix.button import MDRaisedButton
 
 class MainApp(MDApp):
     def build(self):
@@ -17,13 +18,13 @@ class MainApp(MDApp):
         toolbar = Label(text="Регистрация", size_hint_y=None, height="48dp")
         layout.add_widget(toolbar)
 
-        email_field = self.create_textinput("Введите ваш email", "email")
+        email_field = self.create_textinput("Введите ваш email", "email", "email-outline")
         layout.add_widget(email_field)
 
         # Добавляем отступ между полями для ввода
         layout.add_widget(Widget(size_hint_y=None, height="10dp"))
 
-        password_field = self.create_textinput("Введите пароль", "password")
+        password_field = self.create_textinput("Введите пароль", "password", "lock-outline")
         layout.add_widget(password_field)
 
         # Добавляем отступ между полем для ввода пароля и кнопкой регистрации
@@ -41,13 +42,14 @@ class MainApp(MDApp):
 
         return layout
 
-    def create_textinput(self, hint_text, info_key):
+    def create_textinput(self, hint_text, info_key, icon):
         text_input = MDTextField(
             text='',
             hint_text=hint_text,
             size_hint=(1, None),
             font_size='15sp',
             mode="rectangle",
+            icon_right=icon,
             line_color_normal=get_color_from_hex("#2C2C2C"),
             line_color_focus=get_color_from_hex("#2C2C2C")
         )
