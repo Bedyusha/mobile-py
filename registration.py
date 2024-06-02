@@ -4,9 +4,11 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
 from kivy.uix.label import Label
 from kivy.utils import get_color_from_hex
-from kivymd.uix.button import MDRectangleFlatButton
 from kivy.uix.widget import Widget
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.dialog import MDDialog
+import requests
+import re
 
 class MainApp(MDApp):
     def build(self):
@@ -18,16 +20,22 @@ class MainApp(MDApp):
         toolbar = Label(text="Регистрация", size_hint_y=None, height="48dp")
         layout.add_widget(toolbar)
 
-        email_field = self.create_textinput("Введите ваш email", "email", "email-outline")
-        layout.add_widget(email_field)
+        self.email_field = self.create_textinput("Введите ваш email", "email", "email-outline")
+        layout.add_widget(self.email_field)
 
         # Добавляем отступ между полями для ввода
         layout.add_widget(Widget(size_hint_y=None, height="10dp"))
 
-        password_field = self.create_textinput("Введите пароль", "password", "lock-outline")
-        layout.add_widget(password_field)
+        self.password_field = self.create_textinput("Введите пароль", "password", "lock-outline", password=True)
+        layout.add_widget(self.password_field)
 
-        # Добавляем отступ между полем для ввода пароля и кнопкой регистрации
+        # Добавляем отступ между полем для ввода пароля и полем для подтверждения пароля
+        layout.add_widget(Widget(size_hint_y=None, height="10dp"))
+
+        self.confirm_password_field = self.create_textinput("Подтвердите пароль", "confirm_password", "lock-outline", password=True)
+        layout.add_widget(self.confirm_password_field)
+
+        # Добавляем отступ между полем для подтверждения пароля и кнопкой регистрации
         layout.add_widget(Widget(size_hint_y=None, height="10dp"))
 
         register_button = MDRaisedButton(
@@ -42,7 +50,7 @@ class MainApp(MDApp):
 
         return layout
 
-    def create_textinput(self, hint_text, info_key, icon):
+    def create_textinput(self, hint_text, info_key, icon, password=False):
         text_input = MDTextField(
             text='',
             hint_text=hint_text,
@@ -51,18 +59,41 @@ class MainApp(MDApp):
             mode="rectangle",
             icon_right=icon,
             line_color_normal=get_color_from_hex("#2C2C2C"),
-            line_color_focus=get_color_from_hex("#2C2C2C")
+            line_color_focus=get_color_from_hex("#2C2C2C"),
+            password=password  # добавляем аргумент password
         )
-        text_input.bind(text=self.validate_and_save_text(info_key))
         return text_input
-    
-
-    def validate_and_save_text(self, info_key):
-        def save_text(instance, value):
-            print(f"Saved {info_key}: {value}")
-        return save_text
 
     def on_button_press(self, instance):
-        print("Button pressed")
+        email = self.email_field.text
+        password = self.password_field.text
+        confirm_password = self.confirm_password_field.text
+
+        # Проверка формата электронной почты
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            self.show_alert_dialog("Неверный формат электронной почты!")
+            return
+
+        # Проверка надежности пароля
+        if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[a-zA-Z]", password):
+            self.show_alert_dialog("Пароль должен быть не менее 8 символов и содержать хотя бы 1 букву и 1 цифру!")
+            return
+
+        if password == confirm_password:
+            response = requests.post('http://localhost:5000/register', data={'email': email, 'password': password})
+            if response.status_code == 200:
+                self.show_alert_dialog("Успешная регистрация!")
+            else:
+                self.show_alert_dialog("Ошибка регистрации!")
+        else:
+            self.show_alert_dialog("Пароли не совпадают!")
+
+    def show_alert_dialog(self, text):
+        self.dialog = MDDialog(title='Уведомление', text=text, size_hint=(0.8, 1),
+                          buttons=[MDRaisedButton(text='ОК', on_release=self.close_dialog)])
+        self.dialog.open()
+
+    def close_dialog(self, instance):
+        self.dialog.dismiss()
 
 MainApp().run()
