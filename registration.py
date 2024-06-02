@@ -5,7 +5,7 @@ from kivymd.uix.textfield import MDTextField
 from kivy.uix.label import Label
 from kivy.utils import get_color_from_hex
 from kivy.uix.widget import Widget
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.dialog import MDDialog
 import requests
 import re
@@ -20,23 +20,39 @@ class MainApp(MDApp):
         toolbar = Label(text="Регистрация", size_hint_y=None, height="48dp")
         layout.add_widget(toolbar)
 
-        self.email_field = self.create_textinput("Введите ваш email", "email", "email-outline")
-        layout.add_widget(self.email_field)
+        layout.add_widget(Widget(size_hint_y=None, height="30dp"))
 
-        # Добавляем отступ между полями для ввода
-        layout.add_widget(Widget(size_hint_y=None, height="10dp"))
+        email_layout = MDBoxLayout(size_hint=(1, None), height="30dp")
+        self.email_field = self.create_textinput("Введите ваш email", "email")
+        email_layout.add_widget(self.email_field)
+        email_icon_button = MDIconButton(icon="email")
+        email_layout.add_widget(email_icon_button)
+        layout.add_widget(email_layout)
 
-        self.password_field = self.create_textinput("Введите пароль", "password", "lock-outline", password=True)
-        layout.add_widget(self.password_field)
+        # Увеличиваем отступ между полями для ввода
+        layout.add_widget(Widget(size_hint_y=None, height="30dp"))
 
-        # Добавляем отступ между полем для ввода пароля и полем для подтверждения пароля
-        layout.add_widget(Widget(size_hint_y=None, height="10dp"))
+        password_layout = MDBoxLayout(size_hint=(1, None), height="30dp")
+        self.password_field = self.create_textinput("Введите пароль", "password", password=True)
+        password_layout.add_widget(self.password_field)
+        password_icon_button = MDIconButton(icon="eye")
+        password_icon_button.bind(on_release=self.toggle_password_visibility_password)
+        password_layout.add_widget(password_icon_button)
+        layout.add_widget(password_layout)
 
-        self.confirm_password_field = self.create_textinput("Подтвердите пароль", "confirm_password", "lock-outline", password=True)
-        layout.add_widget(self.confirm_password_field)
+        # Увеличиваем отступ между полем для ввода пароля и полем для подтверждения пароля
+        layout.add_widget(Widget(size_hint_y=None, height="30dp"))
 
-        # Добавляем отступ между полем для подтверждения пароля и кнопкой регистрации
-        layout.add_widget(Widget(size_hint_y=None, height="10dp"))
+        confirm_password_layout = MDBoxLayout(size_hint=(1, None), height="30dp")
+        self.confirm_password_field = self.create_textinput("Подтвердите пароль", "confirm_password", password=True)
+        confirm_password_layout.add_widget(self.confirm_password_field)
+        confirm_password_icon_button = MDIconButton(icon="eye")
+        confirm_password_icon_button.bind(on_release=self.toggle_password_visibility_confirm)
+        confirm_password_layout.add_widget(confirm_password_icon_button)
+        layout.add_widget(confirm_password_layout)
+
+        # Увеличиваем отступ между полем для подтверждения пароля и кнопкой регистрации
+        layout.add_widget(Widget(size_hint_y=None, height="20dp"))
 
         register_button = MDRaisedButton(
             text="Зарегистрироваться",
@@ -50,19 +66,26 @@ class MainApp(MDApp):
 
         return layout
 
-    def create_textinput(self, hint_text, info_key, icon, password=False):
+    def create_textinput(self, hint_text, info_key, password=False):
         text_input = MDTextField(
             text='',
             hint_text=hint_text,
             size_hint=(1, None),
             font_size='15sp',
             mode="rectangle",
-            icon_right=icon,
             line_color_normal=get_color_from_hex("#2C2C2C"),
             line_color_focus=get_color_from_hex("#2C2C2C"),
             password=password  # добавляем аргумент password
         )
         return text_input
+
+    def toggle_password_visibility_password(self, instance):
+        self.password_field.password = not self.password_field.password
+        instance.icon = "eye-off" if self.password_field.password else "eye"
+
+    def toggle_password_visibility_confirm(self, instance):
+        self.confirm_password_field.password = not self.confirm_password_field.password
+        instance.icon = "eye-off" if self.confirm_password_field.password else "eye"
 
     def on_button_press(self, instance):
         email = self.email_field.text
@@ -75,8 +98,8 @@ class MainApp(MDApp):
             return
 
         # Проверка надежности пароля
-        if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[a-zA-Z]", password):
-            self.show_alert_dialog("Пароль должен быть не менее 8 символов и содержать хотя бы 1 букву и 1 цифру!")
+        if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[a-zA-Zа-яА-Я]", password):
+            self.show_alert_dialog("Пароль должен быть не менее 8 символов и содержать хотя бы 1 букву (английскую или русскую) и 1 цифру!")
             return
 
         if password == confirm_password:
