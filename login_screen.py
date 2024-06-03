@@ -11,11 +11,16 @@ from kivy.uix.widget import Widget
 from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.dialog import MDDialog
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivymd.uix.label import MDLabel
 
-class Login_screen(MDApp):
+
+class LoginScreen(Screen):
+    def __init__(self, **kwargs):
+        super(LoginScreen, self).__init__(**kwargs)
+        self.layout = self.build()
+        self.add_widget(self.layout)
+
     def build(self):
-        self.theme_cls.primary_palette = "Orange"
-        self.theme_cls.theme_style = "Dark"
 
         layout = MDBoxLayout(orientation='vertical', padding=10)
 
@@ -50,6 +55,16 @@ class Login_screen(MDApp):
         login_button.bind(on_release=self.on_button_press)
         layout.add_widget(login_button)
 
+        layout.add_widget(Widget(size_hint_y=None, height="20dp"))
+        
+        # Добавляем кнопку "Нет аккаунта? Зарегистрируйтесь!"
+        register_button = MDRaisedButton(
+            text="Нет аккаунта? Зарегистрируйтесь!",
+            pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        )
+        register_button.bind(on_release=self.on_register_press)
+        layout.add_widget(register_button)
+        # Добавляем пустой виджет с растягиваемым размером внизу макета
         layout.add_widget(Widget())
 
         return layout
@@ -84,8 +99,14 @@ class Login_screen(MDApp):
         response = requests.post('http://localhost:5000/login', data={'email': email, 'password': hashed_password})
         if response.status_code == 200:
             self.show_alert_dialog("Успешная авторизация!")
+            # Переключаемся на экран профиля питомца после успешной авторизации
+            self.manager.current = 'pet_profile'
         else:
             self.show_alert_dialog("Ошибка авторизации!")
+
+    def on_register_press(self, instance):
+        # Переключаемся на экран регистрации
+        self.manager.current = 'registration'
 
     def show_alert_dialog(self, text):
         self.dialog = MDDialog(title='Уведомление', text=text, size_hint=(0.8, 1),
@@ -94,5 +115,3 @@ class Login_screen(MDApp):
 
     def close_dialog(self, instance):
         self.dialog.dismiss()
-
-Login_screen().run()

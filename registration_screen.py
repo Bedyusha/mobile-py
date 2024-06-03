@@ -12,10 +12,16 @@ import re
 import hashlib
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-class Registration_screen(MDApp):
+class Registration_screen(Screen):
+    def __init__(self, **kwargs):
+        super(Registration_screen, self).__init__(**kwargs)
+        self.layout = self.build()
+        self.add_widget(self.layout)
+
     def build(self):
-        self.theme_cls.primary_palette = "Orange"  # Основной цвет - оранжевый
-        self.theme_cls.theme_style = "Dark"  # Темный стиль темы
+        app = MDApp.get_running_app()  # Получаем экземпляр приложения
+        app.theme_cls.primary_palette = "Orange"  # Основной цвет - оранжевый
+        app.theme_cls.theme_style = "Dark"  # Темный стиль темы
 
         layout = MDBoxLayout(orientation='vertical', padding=10)  # Добавлены отступы
 
@@ -114,6 +120,7 @@ class Registration_screen(MDApp):
             response = requests.post('http://localhost:5000/register', data={'email': email, 'password': hashed_password})
             if response.status_code == 200:
                 self.show_alert_dialog("Успешная регистрация!")
+                self.manager.current = 'login'
             else:
                 self.show_alert_dialog("Ошибка регистрации!")
         else:
@@ -127,4 +134,3 @@ class Registration_screen(MDApp):
     def close_dialog(self, instance):
         self.dialog.dismiss()
 
-Registration_screen().run()
