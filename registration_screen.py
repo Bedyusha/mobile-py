@@ -1,3 +1,6 @@
+import hashlib
+import re
+import requests
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -7,10 +10,10 @@ from kivy.utils import get_color_from_hex
 from kivy.uix.widget import Widget
 from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.dialog import MDDialog
-import requests
-import re
-import hashlib
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivymd.uix.label import MDLabel
+import threading
+from kivy.clock import Clock
 
 class Registration_screen(Screen):
     def __init__(self, **kwargs):
@@ -69,10 +72,24 @@ class Registration_screen(Screen):
         register_button.bind(on_release=self.on_button_press)
         layout.add_widget(register_button)
 
+        layout.add_widget(Widget(size_hint_y=None, height="20dp"))
+
+        # Добавляем кнопку "Назад"
+        back_button = MDRaisedButton(
+            text="Назад",
+            pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        )
+        back_button.bind(on_release=self.on_back_press)
+        layout.add_widget(back_button)
+
         # Добавляем виджет внизу, чтобы сдвинуть содержимое вверх
         layout.add_widget(Widget())
 
         return layout
+    
+    def on_back_press(self, instance):
+        # Переключаемся на экран авторизации
+        self.manager.current = 'login'
 
     def create_textinput(self, hint_text, info_key, password=False):
         text_input = MDTextField(
@@ -101,30 +118,33 @@ class Registration_screen(Screen):
         return hash_object.hexdigest()
 
     def on_button_press(self, instance):
+        threading.Thread(target=self.on_button_press_thread).start()
+
+    def on_button_press_thread(self):
         email = self.email_field.text
         password = self.password_field.text
         confirm_password = self.confirm_password_field.text
 
         # Проверка формата электронной почты
         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            self.show_alert_dialog("Неверный формат электронной почты!")
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Неверный формат электронной почты!"))
             return
 
         # Проверка надежности пароля
         if len(password) < 8 or not re.search(r"\d", password) or not re.search(r"[a-zA-Zа-яА-Я]", password):
-            self.show_alert_dialog("Пароль должен быть не менее 8 символов и содержать хотя бы 1 букву (английскую или русскую) и 1 цифру!")
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Пароль должен быть не менее 8 символов и содержать хотя бы 1 букву (английскую или русскую) и 1 цифру!"))
             return
 
         if password == confirm_password:
             hashed_password = self.hash_password(password)  # Хеширование пароля
             response = requests.post('http://localhost:5000/register', data={'email': email, 'password': hashed_password})
             if response.status_code == 200:
-                self.show_alert_dialog("Успешная регистрация!")
-                self.manager.current = 'login'
+                Clock.schedule_once(lambda dt: self.show_alert_dialog("Успешная регистрация!"))
+                Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'login'))
             else:
-                self.show_alert_dialog("Ошибка регистрации!")
+                Clock.schedule_once(lambda dt: self.show_alert_dialog("Ошибка регистрации!"))
         else:
-            self.show_alert_dialog("Пароли не совпадают!")
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Пароли не совпадают!"))
 
     def show_alert_dialog(self, text):
         self.dialog = MDDialog(title='Уведомление', text=text, size_hint=(0.8, 1),
@@ -133,4 +153,3 @@ class Registration_screen(Screen):
 
     def close_dialog(self, instance):
         self.dialog.dismiss()
-

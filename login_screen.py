@@ -12,7 +12,8 @@ from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.dialog import MDDialog
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivymd.uix.label import MDLabel
-
+import threading
+from kivy.clock import Clock
 
 class LoginScreen(Screen):
     def __init__(self, **kwargs):
@@ -21,7 +22,6 @@ class LoginScreen(Screen):
         self.add_widget(self.layout)
 
     def build(self):
-
         layout = MDBoxLayout(orientation='vertical', padding=10)
 
         toolbar = Label(text="Авторизация", size_hint_y=None, height="48dp")
@@ -55,8 +55,9 @@ class LoginScreen(Screen):
         login_button.bind(on_release=self.on_button_press)
         layout.add_widget(login_button)
 
+
         layout.add_widget(Widget(size_hint_y=None, height="20dp"))
-        
+
         # Добавляем кнопку "Нет аккаунта? Зарегистрируйтесь!"
         register_button = MDRaisedButton(
             text="Нет аккаунта? Зарегистрируйтесь!",
@@ -64,7 +65,7 @@ class LoginScreen(Screen):
         )
         register_button.bind(on_release=self.on_register_press)
         layout.add_widget(register_button)
-        # Добавляем пустой виджет с растягиваемым размером внизу макета
+
         layout.add_widget(Widget())
 
         return layout
@@ -92,17 +93,19 @@ class LoginScreen(Screen):
         instance.icon = "eye-off" if self.password_field.password else "eye"
 
     def on_button_press(self, instance):
+        threading.Thread(target=self.on_button_press_thread).start()
+
+    def on_button_press_thread(self):
         email = self.email_field.text
         password = self.password_field.text
 
         hashed_password = self.hash_password(password)
         response = requests.post('http://localhost:5000/login', data={'email': email, 'password': hashed_password})
         if response.status_code == 200:
-            self.show_alert_dialog("Успешная авторизация!")
-            # Переключаемся на экран профиля питомца после успешной авторизации
-            self.manager.current = 'pet_profile'
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Успешная авторизация!"))
+            Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'pet_profile'))
         else:
-            self.show_alert_dialog("Ошибка авторизации!")
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Ошибка авторизации!"))
 
     def on_register_press(self, instance):
         # Переключаемся на экран регистрации
