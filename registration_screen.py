@@ -9,8 +9,10 @@ from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.dialog import MDDialog
 import requests
 import re
+import hashlib
+from kivy.uix.screenmanager import ScreenManager, Screen
 
-class MainApp(MDApp):
+class Registration_screen(MDApp):
     def build(self):
         self.theme_cls.primary_palette = "Orange"  # Основной цвет - оранжевый
         self.theme_cls.theme_style = "Dark"  # Темный стиль темы
@@ -87,6 +89,11 @@ class MainApp(MDApp):
         self.confirm_password_field.password = not self.confirm_password_field.password
         instance.icon = "eye-off" if self.confirm_password_field.password else "eye"
 
+    def hash_password(self, password):
+        hash_object = hashlib.sha256()
+        hash_object.update(password.encode('utf-8'))
+        return hash_object.hexdigest()
+
     def on_button_press(self, instance):
         email = self.email_field.text
         password = self.password_field.text
@@ -103,7 +110,8 @@ class MainApp(MDApp):
             return
 
         if password == confirm_password:
-            response = requests.post('http://localhost:5000/register', data={'email': email, 'password': password})
+            hashed_password = self.hash_password(password)  # Хеширование пароля
+            response = requests.post('http://localhost:5000/register', data={'email': email, 'password': hashed_password})
             if response.status_code == 200:
                 self.show_alert_dialog("Успешная регистрация!")
             else:
@@ -119,4 +127,4 @@ class MainApp(MDApp):
     def close_dialog(self, instance):
         self.dialog.dismiss()
 
-MainApp().run()
+Registration_screen().run()

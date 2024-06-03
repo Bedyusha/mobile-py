@@ -13,7 +13,7 @@ class AdviceScreen(Screen):
         self.add_widget(layout)
 
         label = MDLabel(
-            text="Выбирите сценарий",
+            text="Выберите сценарий",
             halign="center",
             theme_text_color="Secondary",
             font_style="H5",
