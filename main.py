@@ -15,6 +15,7 @@ from kivymd.uix.dialog import MDDialog
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
 from feeding_screen import FeedingScreen
+from training_screen import TrainingScreen
 from login_screen import LoginScreen
 from registration_screen import Registration_screen
 #Импорты окон совета advice_screen
@@ -39,11 +40,10 @@ class MainApp(MDApp):
 
         # Создаем список для Navigation Drawer
         list_drawer = MDList()
-        button_names = ['Профиль питомца', 'Button 2', 'График питания', 'Дресировка', 'Советы на особый случай', 'Выйти из аккаунта']
+        button_names = ['Профиль питомца', 'График питания', 'Дресировка', 'Советы на особый случай', 'Выйти из аккаунта']
         buttons = [OneLineListItem(text=name) for name in button_names]
         for button in buttons:
             list_drawer.add_widget(button)
-
         # Создаем Navigation Drawer и добавляем в него список
         self.nav_drawer = MDNavigationDrawer()
         self.nav_drawer.add_widget(list_drawer)
@@ -59,6 +59,30 @@ class MainApp(MDApp):
         login_screen = LoginScreen(name='login')
         sm.add_widget(login_screen)
 
+        # Привязываем первую кнопку в списке к переключению на экран профиля питомца
+        def switch_to_pet_profile(*args):
+            sm.current = 'pet_profile'
+        buttons[0].bind(on_release=switch_to_pet_profile)
+
+        def switch_to_feeding_screen(*args):
+            sm.current = 'feeding_screen'
+        buttons[1].bind(on_release=switch_to_feeding_screen)
+
+        def switch_to_training_screen(*args):
+            sm.current = 'training_screen'
+        buttons[2].bind(on_release=switch_to_training_screen)
+
+        # Привязываем кнопку "Советы на особый случай" к переключению на экран советов
+        def switch_to_advice_screen(*args):
+            sm.current = 'advice'
+        buttons[3].bind(on_release=switch_to_advice_screen)
+
+        # Привязываем кнопку "Вернуться на главную страницу" к переключению на главный экран
+        def switch_to_main_screen(*args):
+            
+            sm.current = 'login' 
+        buttons[-1].bind(on_release=switch_to_main_screen)
+
         registration_screen = Registration_screen(name='registration')
         sm.add_widget(registration_screen)
 
@@ -68,10 +92,14 @@ class MainApp(MDApp):
 
         notification_screen = FeedingScreen(name = 'feeding_screen')
         sm.add_widget(notification_screen)
+        
+        notification_screen = TrainingScreen(name = 'training_screen')
+        sm.add_widget(notification_screen)
 
         advice_screen = AdviceScreen(name='advice')
         sm.add_widget(advice_screen)
 
+######окна советов
         birth_screen_cat = BirthScreen(name='birth_screen_cat')
         sm.add_widget(birth_screen_cat)
 
@@ -80,13 +108,17 @@ class MainApp(MDApp):
 
         tick_bite = Tick_bite(name='tick_bite')
         sm.add_widget(tick_bite)
+######окна советов
 
         # Создаем MDNavigationLayout и добавляем в него ScreenManager и NavigationDrawer
         nav_layout = MDNavigationLayout()
         nav_layout.add_widget(sm)
         nav_layout.add_widget(self.nav_drawer)
-
+        
         return nav_layout
+
+    def switch_screen(self, screen_name):
+        self.root.ids.sm.current = screen_name
 
     def switch_theme(self, *args):
         self.theme_cls.theme_style = "Light" if self.theme_cls.theme_style == "Dark" else "Dark"
