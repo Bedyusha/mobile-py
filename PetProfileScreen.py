@@ -12,11 +12,15 @@ from kivymd.uix.textfield import MDTextField
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.pickers import MDDatePicker
 from kivy.uix.spinner import Spinner
-
+from kivymd.app import MDApp
 class ImageButton(ButtonBehavior, Image):
     pass
 
 class PetProfileScreen(Screen):
+    def on_enter(self, *args):
+        app = MDApp.get_running_app()
+        app.nav_drawer.set_state("close")
+        app.nav_drawer.disabled = False
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)
         self.name = 'pet_profile'

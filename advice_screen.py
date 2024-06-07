@@ -9,6 +9,7 @@ from kivy.uix.scrollview import ScrollView
 class AdviceScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.name = 'advice'
         layout = BoxLayout(orientation='vertical', padding=[10, 50, 10, 10])
         self.add_widget(layout)
 
@@ -38,6 +39,7 @@ class AdviceScreen(Screen):
         layout.add_widget(self.scroll_view)
 
         self.items = ["Роды питомца", "Выпадение зубов", "Укус клеща", "Рвота у питомца", "Стрижка когтей"]
+        self.buttons = {}  # словарь для хранения ссылок на кнопки
         self.update_list()
 
     def on_text(self, instance, value):
@@ -50,6 +52,7 @@ class AdviceScreen(Screen):
                 list_item = OneLineListItem(text=item)
                 list_item.bind(on_release=self.change_screen)
                 self.list_layout.add_widget(list_item)
+                self.buttons[item] = list_item  # сохраняем ссылку на кнопку
 
     def change_screen(self, instance):
         if instance.text == "Роды питомца":

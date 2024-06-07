@@ -1,7 +1,6 @@
 import hashlib
 import re
 import requests
-from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.textfield import MDTextField
@@ -10,14 +9,20 @@ from kivy.utils import get_color_from_hex
 from kivy.uix.widget import Widget
 from kivymd.uix.button import MDRaisedButton, MDIconButton
 from kivymd.uix.dialog import MDDialog
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivymd.uix.label import MDLabel
+from kivy.uix.screenmanager import Screen
 import threading
 from kivy.clock import Clock
 
-class Registration_screen(Screen):
+class RegistrationScreen(Screen):
+
+    def on_enter(self, *args):
+        app = MDApp.get_running_app()
+        app.nav_drawer.set_state("close")
+        app.nav_drawer.disabled = True
+
     def __init__(self, **kwargs):
-        super(Registration_screen, self).__init__(**kwargs)
+        super(RegistrationScreen, self).__init__(**kwargs)
+        self.name = 'registration'
         self.layout = self.build()
         self.add_widget(self.layout)
 

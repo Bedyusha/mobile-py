@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, send
 import sqlite3
 from sqlite3 import Error
@@ -18,6 +18,12 @@ def register():
                  (email text, password text)''')
 
     c.execute("INSERT INTO users VALUES (?,?)", (email, password))
+
+    # # Создаем запись в таблице pet_profile_info при регистрации
+    # c.execute('''CREATE TABLE IF NOT EXISTS pet_profile_info
+    #              (pet_name text, breed text, owner text , birthday text, image_path text)''')
+
+    c.execute("INSERT INTO pet_profile_info (owner) VALUES (?)", (email,))
 
     conn.commit()
     conn.close()
@@ -42,6 +48,7 @@ def login():
         return 'Неверный пароль', 401
 
     return 'OK', 200
+
 
 if __name__ == '__main__':
     socketio.run(app)

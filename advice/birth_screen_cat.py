@@ -10,6 +10,7 @@ from kivy.uix.widget import Widget
 class BirthScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.name = 'birth_screen_cat'
         self.layout = BoxLayout(orientation='vertical', padding=[10, 10, 10, 10])
         self.add_widget(self.layout)
 

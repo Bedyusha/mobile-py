@@ -11,14 +11,14 @@ from kivymd.uix.button import MDIconButton
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
 from kivymd.uix.dialog import MDDialog
-#Импорты основных окон
+# Импорты основных окон
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
 from feeding_screen import FeedingScreen
 from training_screen import TrainingScreen
 from login_screen import LoginScreen
-from registration_screen import Registration_screen
-#Импорты окон совета advice_screen
+from registration_screen import RegistrationScreen  # Добавьте импорт экрана регистрации
+# Импорты окон совета advice_screen
 from advice.birth_screen_cat import BirthScreen
 from advice.teeth import Teeth
 from advice.tick_bite import Tick_bite
@@ -35,6 +35,7 @@ LabelBase.register(DEFAULT_FONT, "fonts\\Ubuntu-Regular.ttf")
 class MainApp(MDApp):
     def build(self):
         Window.size = (400, 700) 
+        
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
 
@@ -44,7 +45,7 @@ class MainApp(MDApp):
         buttons = [OneLineListItem(text=name) for name in button_names]
         for button in buttons:
             list_drawer.add_widget(button)
-        # Создаем Navigation Drawer и добавляем в него список
+        # Создаем Navigation Drawer и добавляем в него список 
         self.nav_drawer = MDNavigationDrawer()
         self.nav_drawer.add_widget(list_drawer)
 
@@ -78,12 +79,11 @@ class MainApp(MDApp):
         buttons[3].bind(on_release=switch_to_advice_screen)
 
         # Привязываем кнопку "Вернуться на главную страницу" к переключению на главный экран
-        def switch_to_main_screen(*args):
-            
+        def switch_to_login_screen(*args):
             sm.current = 'login' 
-        buttons[-1].bind(on_release=switch_to_main_screen)
+        buttons[-1].bind(on_release=switch_to_login_screen)
 
-        registration_screen = Registration_screen(name='registration')
+        registration_screen = RegistrationScreen(name='registration')
         sm.add_widget(registration_screen)
 
         # Добавляем остальные экраны
