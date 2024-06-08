@@ -18,7 +18,7 @@ class ImageButton(ButtonBehavior, Image):
 class PetProfileScreen(Screen):
     def on_enter(self, *args):
         app = MDApp.get_running_app()
-        app.nav_drawer.set_state("close")
+        #app.nav_drawer.set_state("close")
         app.nav_drawer.disabled = False
 
         # Загрузить информацию о профиле питомца

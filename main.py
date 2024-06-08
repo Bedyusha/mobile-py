@@ -86,10 +86,10 @@ class MainApp(MDApp):
             sm.current = 'advice'
         buttons[3].bind(on_release=switch_to_advice_screen)
 
-        # Привязываем кнопку "Вернуться на главную страницу" к переключению на главный экран
-        def switch_to_login_screen(*args):
-            sm.current = 'login' 
-        buttons[-1].bind(on_release=switch_to_login_screen)
+# Привязываем кнопку "Выйти из аккаунта" к функции show_logout_dialog
+        def show_logout_dialog(*args):
+            self.show_logout_dialog(sm)
+        buttons[-1].bind(on_release=show_logout_dialog)
 
         # Добавляем остальные экраны
         pet_profile_screen = PetProfileScreen(name = 'pet_profile')
