@@ -11,6 +11,7 @@ from kivy.uix.screenmanager import Screen
 import threading
 from kivy.clock import Clock
 from kivymd.app import MDApp
+import sqlite3
 
 class LoginScreen(Screen):
     def on_enter(self, *args):
@@ -106,6 +107,23 @@ class LoginScreen(Screen):
         response = requests.post('http://localhost:5000/login', data={'email': email, 'password': hashed_password})
         if response.status_code == 200:
             MDApp.get_running_app().user_email = email
+            conn = sqlite3.connect('session.db')
+            c = conn.cursor()
+
+            # Создать таблицу для хранения информации о сессии, если она еще не существует
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS sessioninfo (
+                    id INTEGER PRIMARY KEY,
+                    user_email TEXT
+                )
+            ''')
+
+            # Сохранить email пользователя в базе данных
+            c.execute('INSERT OR REPLACE INTO sessioninfo (id, user_email) VALUES (1, ?)', (email,))
+
+            # Закрыть соединение с базой данных
+            conn.commit()
+            conn.close()
             Clock.schedule_once(lambda dt: self.show_alert_dialog("Успешная авторизация!"))
             Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'pet_profile'))
         else:

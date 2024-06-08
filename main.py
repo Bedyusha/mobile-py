@@ -11,6 +11,7 @@ from kivymd.uix.button import MDIconButton
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
 from kivymd.uix.dialog import MDDialog
+import sqlite3
 # Импорты основных окон
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
@@ -99,6 +100,34 @@ class MainApp(MDApp):
         advice_screen = AdviceScreen(name='advice')
         sm.add_widget(advice_screen)
 
+                # Подключиться к базе данных SQLite (будет создана, если еще не существует)
+        conn = sqlite3.connect('session.db')
+        c = conn.cursor()
+
+        # Создать таблицу для хранения информации о сессии, если она еще не существует
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS sessioninfo (
+                id INTEGER PRIMARY KEY,
+                user_email TEXT
+            )
+        ''')
+
+        # Получить email пользователя из базы данных
+        c.execute('SELECT user_email FROM sessioninfo WHERE id = 1')
+        result = c.fetchone()
+        self.user_email = result[0] if result else None
+
+        # Если пользователь уже вошел в систему, перейти на экран профиля питомца
+        if self.user_email is not None:
+            pet_profile_screen = sm.get_screen('pet_profile')
+            pet_profile_screen.user_email = self.user_email
+            sm.current = 'pet_profile'
+        else:
+            sm.current = 'login'
+
+        # Закрыть соединение с базой данных
+        conn.close()
+
 ######окна советов
         birth_screen_cat = BirthScreen(name='birth_screen_cat')
         sm.add_widget(birth_screen_cat)
@@ -133,6 +162,17 @@ class MainApp(MDApp):
     def logout(self, sm):
         self.dialog.dismiss()
         sm.current = 'login'
+
+        # Подключиться к базе данных SQLite
+        conn = sqlite3.connect('session.db')
+        c = conn.cursor()
+
+        # Удалить информацию о сессии из базы данных
+        c.execute('DELETE FROM sessioninfo WHERE id = 1')
+
+        # Закрыть соединение с базой данных
+        conn.commit()
+        conn.close()
 
     def close_dialog(self, instance):
         self.dialog.dismiss()
