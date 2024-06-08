@@ -83,12 +83,12 @@ class MainApp(MDApp):
             sm.current = 'login' 
         buttons[-1].bind(on_release=switch_to_login_screen)
 
-        registration_screen = RegistrationScreen(name='registration')
-        sm.add_widget(registration_screen)
-
         # Добавляем остальные экраны
         pet_profile_screen = PetProfileScreen(name = 'pet_profile')
         sm.add_widget(pet_profile_screen)
+
+        registration_screen = RegistrationScreen(name='registration')
+        sm.add_widget(registration_screen)
 
         notification_screen = FeedingScreen(name = 'feeding_screen')
         sm.add_widget(notification_screen)

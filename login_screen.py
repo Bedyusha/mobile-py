@@ -105,6 +105,7 @@ class LoginScreen(Screen):
         hashed_password = self.hash_password(password)
         response = requests.post('http://localhost:5000/login', data={'email': email, 'password': hashed_password})
         if response.status_code == 200:
+            MDApp.get_running_app().user_email = email
             Clock.schedule_once(lambda dt: self.show_alert_dialog("Успешная авторизация!"))
             Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'pet_profile'))
         else:
