@@ -40,14 +40,13 @@ class PetProfileScreen(Screen):
                 for field, widget in fields.items():
                     value = pet_profile.get(field)
                     if value is not None:  # проверить, что значение не None
-                        if widget is self.image:
-                            widget.source = value
-                        else:
-                            widget.text = value
-            else:
-                print("Получен пустой ответ от сервера")
+                        Clock.schedule_once(lambda dt, w=widget, v=value: self.update_widget(w, v))
+
+    def update_widget(self, widget, value):
+        if widget is self.image:
+            widget.source = value
         else:
-            print(f"Ошибка запроса: {response.status_code}")
+            widget.text = value
 
     def save_pet_profile(self, instance):
         # Сохранить профиль питомца в отдельном потоке
