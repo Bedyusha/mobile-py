@@ -66,5 +66,27 @@ def pet_profile():
     else:
         return jsonify({"error": "Pet profile not found"}), 404
 
+@app.route('/save_pet_profile', methods=['POST'])
+def save_pet_profile():
+    data = request.get_json()
+    email = data.get('email')
+    pet_name = data.get('pet_name')
+    pet_breed = data.get('pet_breed')
+    owner_email = data.get('owner_email')  # Используйте owner_email
+    pet_birthday = data.get('pet_birthday')  # Добавьте pet_birthday
+    image_path = data.get('image_path')  # Добавьте image_path
+
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    # Обновить запись в базе данных
+    c.execute("UPDATE pet_profiles SET pet_name = ?, pet_breed = ?, pet_birthday = ?, image_path = ?, owner_email = ? WHERE owner_email = ?",
+              (pet_name, pet_breed, pet_birthday, image_path, owner_email, email))  # Добавьте pet_birthday и image_path
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Pet profile updated successfully"}), 200
+
+
+
 if __name__ == '__main__':
     socketio.run(app)

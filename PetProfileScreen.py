@@ -8,6 +8,9 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.pickers import MDDatePicker
 from kivymd.app import MDApp
 import requests
+from kivymd.uix.button import MDRaisedButton
+import threading
+from kivy.clock import Clock
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -19,7 +22,7 @@ class PetProfileScreen(Screen):
         app.nav_drawer.disabled = False
 
         # Загрузить информацию о профиле питомца
-        self.load_pet_profile()
+        threading.Thread(target=self.load_pet_profile).start()
 
     def load_pet_profile(self):
         email = MDApp.get_running_app().user_email
@@ -27,13 +30,51 @@ class PetProfileScreen(Screen):
         if response.status_code == 200:
             pet_profile = response.json()
             if pet_profile is not None:
-                self.text_inputs['pet_name'].text = pet_profile.get('pet_name', '')
-                self.text_inputs['pet_breed'].text = pet_profile.get('pet_breed', '')
-                self.text_inputs['owner_name'].text = pet_profile.get('owner_email', '')
+                fields = {
+                    'pet_name': self.text_inputs['pet_name'],
+                    'pet_breed': self.text_inputs['pet_breed'],
+                    'owner_email': self.text_inputs['owner_name'],
+                    'pet_birthday': self.date_picker_input,
+                    'image_path': self.image  # загрузить изображение по сохраненному пути
+                }
+                for field, widget in fields.items():
+                    value = pet_profile.get(field)
+                    if value is not None:  # проверить, что значение не None
+                        if widget is self.image:
+                            widget.source = value
+                        else:
+                            widget.text = value
             else:
                 print("Получен пустой ответ от сервера")
         else:
             print(f"Ошибка запроса: {response.status_code}")
+
+    def save_pet_profile(self, instance):
+        # Сохранить профиль питомца в отдельном потоке
+        threading.Thread(target=self.save_pet_profile_thread, args=(instance,)).start()
+
+    def save_pet_profile_thread(self, instance):
+        email = MDApp.get_running_app().user_email
+        pet_name = self.text_inputs['pet_name'].text
+        pet_breed = self.text_inputs['pet_breed'].text
+        owner_email = self.text_inputs['owner_name'].text
+        pet_birthday = self.date_picker_input.text
+        image_path = self.image.source  # добавить путь к изображению
+
+        data = {
+            'email': email,
+            'pet_name': pet_name,
+            'pet_breed': pet_breed,
+            'owner_email': owner_email,
+            'pet_birthday': pet_birthday,
+            'image_path': image_path  # добавить путь к изображению
+        }
+
+        response = requests.post('http://localhost:5000/save_pet_profile', json=data)
+        if response.status_code == 200:
+            print("Профиль питомца успешно сохранен!")
+        else:
+            print(f"Ошибка сохранения профиля питомца: {response.status_code}")
 
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)
@@ -49,14 +90,22 @@ class PetProfileScreen(Screen):
 
         self.text_inputs['pet_name'] = self.create_textinput('Кличка питомца:')
         print("Поле 'pet_name' инициализировано")
+
         self.text_inputs['pet_breed'] = self.create_textinput('Порода:')
         print("Поле 'pet_breed' инициализировано")
+
         self.text_inputs['owner_name'] = self.create_textinput('Хозяин:')
+        self.text_inputs['owner_name'].readonly = True
         print("Поле 'owner_name' инициализировано")
 
-        self.date_picker_input = MDTextField(hint_text='Дата рождения:', size_hint=(1, None), font_size='15sp', mode="rectangle")
+        self.date_picker_input = MDTextField(hint_text='Дата рождения питомца:', size_hint=(1, None), font_size='15sp', mode="rectangle")
         self.date_picker_input.bind(on_touch_down=self.show_date_picker)
         self.info_layout.add_widget(self.date_picker_input)
+
+        # Добавить кнопку "Сохранить изменения"
+        self.save_button = MDRaisedButton(text='Сохранить изменения', size_hint=(1, None))
+        self.save_button.bind(on_release=self.save_pet_profile)
+        self.layout.add_widget(self.save_button)
 
         self.add_widget(self.layout)
 
@@ -64,7 +113,6 @@ class PetProfileScreen(Screen):
         text_input = MDTextField(hint_text=hint_text, size_hint=(1, None), font_size='15sp', mode="rectangle")
         self.info_layout.add_widget(text_input)
         return text_input  # Вернуть созданный MDTextField
-
 
     def show_date_picker(self, instance, touch):
         if instance.collide_point(*touch.pos):
