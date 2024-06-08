@@ -12,6 +12,9 @@ from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
 from kivymd.uix.dialog import MDDialog
 import sqlite3
+from kivymd.uix.list import OneLineIconListItem
+from kivymd.icon_definitions import md_icons
+from kivymd.uix.list import IconLeftWidget
 # Импорты основных окон
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
@@ -40,13 +43,17 @@ class MainApp(MDApp):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Orange"
 
-        # Создаем список для Navigation Drawer
         list_drawer = MDList()
         button_names = ['Профиль питомца', 'График питания', 'Дресировка', 'Советы на особый случай', 'Выйти из аккаунта']
-        buttons = [OneLineListItem(text=name) for name in button_names]
-        for button in buttons:
-            list_drawer.add_widget(button)
-        # Создаем Navigation Drawer и добавляем в него список 
+        icons = ['cat', 'bowl', 'paw', 'information', 'logout']  # Примеры иконок
+
+        buttons = []
+        for name, icon in zip(button_names, icons):
+            item = OneLineIconListItem(text=name)
+            item.add_widget(IconLeftWidget(icon=icon))
+            buttons.append(item)
+            list_drawer.add_widget(item)
+
         self.nav_drawer = MDNavigationDrawer()
         self.nav_drawer.add_widget(list_drawer)
 
