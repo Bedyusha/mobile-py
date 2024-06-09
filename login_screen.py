@@ -12,6 +12,7 @@ import threading
 from kivy.clock import Clock
 from kivymd.app import MDApp
 import sqlite3
+from kivymd.uix.button import MDRectangleFlatButton
 
 class LoginScreen(Screen):
     def on_enter(self, *args):
@@ -19,7 +20,6 @@ class LoginScreen(Screen):
         app.nav_drawer.set_state("close")
         app.nav_drawer.disabled = True
         
-
     def __init__(self, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)
         self.name = 'login'
@@ -64,7 +64,7 @@ class LoginScreen(Screen):
         layout.add_widget(Widget(size_hint_y=None, height="20dp"))
 
         # Добавляем кнопку "Нет аккаунта? Зарегистрируйтесь!"
-        register_button = MDRaisedButton(
+        register_button = MDRectangleFlatButton(
             text="Нет аккаунта? Зарегистрируйтесь!",
             pos_hint={'center_x': 0.5, 'center_y': 0.5}
         )

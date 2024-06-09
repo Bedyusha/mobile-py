@@ -1,22 +1,16 @@
-import sqlite3
+from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
+from kivymd.app import MDApp
+from kivymd.uix.button import MDRaisedButton, MDFlatButton, MDIconButton, MDFloatingActionButton, MDRectangleFlatButton
 
-def create_table():
-    conn = sqlite3.connect('users.db')
-    c = conn.cursor()
+class MainApp(MDApp):
+    def build(self):
+        layout = BoxLayout(orientation='vertical', spacing=10)
+        layout.add_widget(MDRaisedButton(text='MDRaisedButton', pos_hint={'center_x': 0.5}))
+        layout.add_widget(MDFlatButton(text='MDFlatButton', pos_hint={'center_x': 0.5}))
+        layout.add_widget(MDIconButton(icon='android', pos_hint={'center_x': 0.5}))
+        layout.add_widget(MDFloatingActionButton(icon='plus', pos_hint={'center_x': 0.5}))
+        layout.add_widget(MDRectangleFlatButton(text='MDRectangleFlatButton', pos_hint={'center_x': 0.5}))
+        return layout
 
-    # Создание таблицы
-    c.execute('''
-        CREATE TABLE pet_profiles (
-            owner_email TEXT PRIMARY KEY,
-            pet_name TEXT,
-            pet_breed TEXT,
-            pet_birthday TEXT,
-            image_path TEXT
-        )
-    ''')
-
-    conn.commit()
-    conn.close()
-
-if __name__ == '__main__':
-    create_table()
+MainApp().run()

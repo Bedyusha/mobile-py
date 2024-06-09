@@ -19,7 +19,7 @@ class ImageButton(ButtonBehavior, Image):
 class PetProfileScreen(Screen):
     def on_enter(self, *args):
         app = MDApp.get_running_app()
-        #app.nav_drawer.set_state("close")
+        app.nav_drawer.set_state("open")
         app.nav_drawer.disabled = False
 
         # Загрузить информацию о профиле питомца
@@ -36,8 +36,8 @@ class PetProfileScreen(Screen):
                     'pet_breed': self.text_inputs['pet_breed'],
                     'owner_email': self.text_inputs['owner_name'],
                     'pet_birthday': self.date_picker_input,
-                    'image_path': self.image,  # загрузить изображение по сохраненному пути
-                    'pet_type': self.pet_type_spinner  # загрузить тип питомца
+                    'image_path': self.image, 
+                    'pet_type': self.pet_type_spinner  
                 }
                 for field, widget in fields.items():
                     value = pet_profile.get(field)
@@ -89,13 +89,10 @@ class PetProfileScreen(Screen):
         # Очистить текстовые поля
         for text_input in self.text_inputs.values():
             text_input.text = ''
-
         # Очистить выпадающий список
         self.pet_type_spinner.text = 'Выбирите тип питомца'
-
         # Очистить изображение
         self.image.source = 'cat-defolt.png'
-
 
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)

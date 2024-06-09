@@ -59,7 +59,7 @@ def pet_profile():
     conn.close()
     if pet_profile:
         # Преобразовать кортеж в словарь
-        keys = ['owner_email', 'pet_name', 'pet_breed', 'pet_birthday', 'image_path', 'pet_type']  # Добавьте 'pet_type'
+        keys = ['owner_email', 'pet_name', 'pet_breed', 'pet_birthday', 'image_path', 'pet_type','last_feed']  # Добавьте 'pet_type'
         pet_profile_dict = dict(zip(keys, pet_profile))
         print(pet_profile_dict)
         return jsonify(pet_profile_dict), 200
