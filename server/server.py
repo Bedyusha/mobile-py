@@ -21,7 +21,7 @@ def register():
 
     # Создание записи в таблице pet_profiles для нового пользователя
     c.execute('''CREATE TABLE IF NOT EXISTS pet_profiles
-                 (owner_email text PRIMARY KEY, pet_name text, pet_breed text, pet_birthday text, image_path text)''')
+                 (owner_email text PRIMARY KEY, pet_name text, pet_weight int, pet_birthday text, image_path text, pet_type text ,last_feed text)''')
 
     c.execute("INSERT INTO pet_profiles (owner_email) VALUES (?)", (email,))
 
@@ -59,7 +59,7 @@ def pet_profile():
     conn.close()
     if pet_profile:
         # Преобразовать кортеж в словарь
-        keys = ['owner_email', 'pet_name', 'pet_breed', 'pet_birthday', 'image_path', 'pet_type','last_feed']  # Добавьте 'pet_type'
+        keys = ['owner_email', 'pet_name', 'pet_weight', 'pet_birthday', 'image_path', 'pet_type','last_feed']  # Добавьте 'pet_type'
         pet_profile_dict = dict(zip(keys, pet_profile))
         print(pet_profile_dict)
         return jsonify(pet_profile_dict), 200
@@ -72,7 +72,7 @@ def save_pet_profile():
     data = request.get_json()
     email = data.get('email')
     pet_name = data.get('pet_name')
-    pet_breed = data.get('pet_breed')
+    pet_weight = data.get('pet_weight')
     owner_email = data.get('owner_email')  # Используйте owner_email
     pet_birthday = data.get('pet_birthday')  # Добавьте pet_birthday
     image_path = data.get('image_path')  # Добавьте image_path
@@ -81,8 +81,8 @@ def save_pet_profile():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
     # Обновить запись в базе данных
-    c.execute("UPDATE pet_profiles SET pet_name = ?, pet_breed = ?, pet_birthday = ?, image_path = ?, owner_email = ?, pet_type = ? WHERE owner_email = ?",
-              (pet_name, pet_breed, pet_birthday, image_path, owner_email, pet_type, email))  # Добавьте pet_type
+    c.execute("UPDATE pet_profiles SET pet_name = ?, pet_weight = ?, pet_birthday = ?, image_path = ?, owner_email = ?, pet_type = ? WHERE owner_email = ?",
+              (pet_name, pet_weight, pet_birthday, image_path, owner_email, pet_type, email))  # Добавьте pet_type
     conn.commit()
     conn.close()
 

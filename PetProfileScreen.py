@@ -33,7 +33,7 @@ class PetProfileScreen(Screen):
             if pet_profile is not None:
                 fields = {
                     'pet_name': self.text_inputs['pet_name'],
-                    'pet_breed': self.text_inputs['pet_breed'],
+                    'pet_weight': self.text_inputs['pet_weight'],
                     'owner_email': self.text_inputs['owner_name'],
                     'pet_birthday': self.date_picker_input,
                     'image_path': self.image, 
@@ -53,8 +53,7 @@ class PetProfileScreen(Screen):
         elif widget is self.image:
             widget.source = value if value else 'cat-defolt.png'  # Если значение пустое, установите изображение по умолчанию
         else:
-            widget.text = value if value else ''  # Если значение пустое, очистите текст
-
+            widget.text = str(value) if value else ''  # Если значение пустое, очистите текст
 
     def save_pet_profile(self, instance):
         # Сохранить профиль питомца в отдельном потоке
@@ -63,7 +62,7 @@ class PetProfileScreen(Screen):
     def save_pet_profile_thread(self, instance):
         email = MDApp.get_running_app().user_email
         pet_name = self.text_inputs['pet_name'].text
-        pet_breed = self.text_inputs['pet_breed'].text
+        pet_weight = self.text_inputs['pet_weight'].int
         owner_email = self.text_inputs['owner_name'].text
         pet_birthday = self.date_picker_input.text
         image_path = self.image.source  # добавить путь к изображению
@@ -72,7 +71,7 @@ class PetProfileScreen(Screen):
         data = {
             'email': email,
             'pet_name': pet_name,
-            'pet_breed': pet_breed,
+            'pet_weight': pet_weight,
             'owner_email': owner_email,
             'pet_birthday': pet_birthday,
             'image_path': image_path,  # добавить путь к изображению
@@ -120,8 +119,8 @@ class PetProfileScreen(Screen):
         self.text_inputs['pet_name'] = self.create_textinput('Кличка питомца:')
         print("Поле 'pet_name' инициализировано")
 
-        self.text_inputs['pet_breed'] = self.create_textinput('Порода:')
-        print("Поле 'pet_breed' инициализировано")
+        self.text_inputs['pet_weight'] = self.create_textinput('Вес питомца(граммы):')
+        print("Поле 'pet_weight' инициализировано")
 
         self.text_inputs['owner_name'] = self.create_textinput('Хозяин:')
         self.text_inputs['owner_name'].readonly = True
