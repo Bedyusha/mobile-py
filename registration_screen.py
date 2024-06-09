@@ -12,6 +12,7 @@ from kivymd.uix.dialog import MDDialog
 from kivy.uix.screenmanager import Screen
 import threading
 from kivy.clock import Clock
+from kivymd.uix.button import MDRectangleFlatButton
 
 class RegistrationScreen(Screen):
 
@@ -80,7 +81,7 @@ class RegistrationScreen(Screen):
         layout.add_widget(Widget(size_hint_y=None, height="20dp"))
 
         # Добавляем кнопку "Назад"
-        back_button = MDRaisedButton(
+        back_button = MDRectangleFlatButton(
             text="Назад",
             pos_hint={'center_x': 0.5, 'center_y': 0.5}
         )

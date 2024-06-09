@@ -44,8 +44,8 @@ class MainApp(MDApp):
         self.theme_cls.primary_palette = "Orange"
 
         list_drawer = MDList()
-        button_names = ['Профиль питомца', 'График питания', 'Дресировка', 'Советы на особый случай', 'Выйти из аккаунта']
-        icons = ['cat', 'bowl', 'paw', 'information', 'logout']  # Примеры иконок
+        button_names = ['Профиль питомца', 'График питания', 'Советы на особый случай', 'Выйти из аккаунта']
+        icons = ['cat', 'bowl','information', 'logout']  # Примеры иконок
 
         buttons = []
         for name, icon in zip(button_names, icons):
@@ -77,14 +77,14 @@ class MainApp(MDApp):
             sm.current = 'feeding_screen'
         buttons[1].bind(on_release=switch_to_feeding_screen)
 
-        def switch_to_training_screen(*args):
-            sm.current = 'training_screen'
-        buttons[2].bind(on_release=switch_to_training_screen)
+        # def switch_to_training_screen(*args):
+        #     sm.current = 'training_screen'
+        # buttons[2].bind(on_release=switch_to_training_screen)
 
         # Привязываем кнопку "Советы на особый случай" к переключению на экран советов
         def switch_to_advice_screen(*args):
             sm.current = 'advice'
-        buttons[3].bind(on_release=switch_to_advice_screen)
+        buttons[2].bind(on_release=switch_to_advice_screen)
 
 # Привязываем кнопку "Выйти из аккаунта" к функции show_logout_dialog
         def show_logout_dialog(*args):
@@ -101,8 +101,8 @@ class MainApp(MDApp):
         notification_screen = FeedingScreen(name = 'feeding_screen')
         sm.add_widget(notification_screen)
         
-        notification_screen = TrainingScreen(name = 'training_screen')
-        sm.add_widget(notification_screen)
+        # notification_screen = TrainingScreen(name = 'training_screen')
+        # sm.add_widget(notification_screen)
 
         advice_screen = AdviceScreen(name='advice')
         sm.add_widget(advice_screen)

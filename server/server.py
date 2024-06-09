@@ -17,6 +17,11 @@ def register():
     c.execute('''CREATE TABLE IF NOT EXISTS users
                  (email text PRIMARY KEY, password text)''')
 
+    # Проверка на существование пользователя
+    c.execute("SELECT * FROM users WHERE email=?", (email,))
+    if c.fetchone() is not None:
+        return 'Пользователь с таким email уже зарегистрирован', 400
+
     c.execute("INSERT INTO users VALUES (?,?)", (email, password))
 
     # Создание записи в таблице pet_profiles для нового пользователя

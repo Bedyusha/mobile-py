@@ -62,7 +62,7 @@ class PetProfileScreen(Screen):
     def save_pet_profile_thread(self, instance):
         email = MDApp.get_running_app().user_email
         pet_name = self.text_inputs['pet_name'].text
-        pet_weight = self.text_inputs['pet_weight'].int
+        pet_weight = int(self.text_inputs['pet_weight'].text)
         owner_email = self.text_inputs['owner_name'].text
         pet_birthday = self.date_picker_input.text
         image_path = self.image.source  # добавить путь к изображению
@@ -120,6 +120,7 @@ class PetProfileScreen(Screen):
         print("Поле 'pet_name' инициализировано")
 
         self.text_inputs['pet_weight'] = self.create_textinput('Вес питомца(граммы):')
+        self.text_inputs['pet_weight'].input_filter = 'int'
         print("Поле 'pet_weight' инициализировано")
 
         self.text_inputs['owner_name'] = self.create_textinput('Хозяин:')
