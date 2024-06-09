@@ -18,6 +18,7 @@ class LoginScreen(Screen):
         app = MDApp.get_running_app()
         app.nav_drawer.set_state("close")
         app.nav_drawer.disabled = True
+        
 
     def __init__(self, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)

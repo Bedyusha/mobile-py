@@ -11,6 +11,7 @@ import requests
 from kivymd.uix.button import MDRaisedButton
 import threading
 from kivy.clock import Clock
+from kivy.uix.spinner import Spinner
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -35,7 +36,8 @@ class PetProfileScreen(Screen):
                     'pet_breed': self.text_inputs['pet_breed'],
                     'owner_email': self.text_inputs['owner_name'],
                     'pet_birthday': self.date_picker_input,
-                    'image_path': self.image  # загрузить изображение по сохраненному пути
+                    'image_path': self.image,  # загрузить изображение по сохраненному пути
+                    'pet_type': self.pet_type_spinner  # загрузить тип питомца
                 }
                 for field, widget in fields.items():
                     value = pet_profile.get(field)
@@ -43,10 +45,16 @@ class PetProfileScreen(Screen):
                         Clock.schedule_once(lambda dt, w=widget, v=value: self.update_widget(w, v))
 
     def update_widget(self, widget, value):
-        if widget is self.image:
-            widget.source = value
+        if isinstance(widget, Spinner):  # Проверьте, является ли виджет выпадающим списком
+            if value in widget.values:  # Проверьте, есть ли значение в списке значений
+                widget.text = value  # Установите значение
+            else:
+                widget.text = ''  # Очистите значение
+        elif widget is self.image:
+            widget.source = value if value else 'cat-defolt.png'  # Если значение пустое, установите изображение по умолчанию
         else:
-            widget.text = value
+            widget.text = value if value else ''  # Если значение пустое, очистите текст
+
 
     def save_pet_profile(self, instance):
         # Сохранить профиль питомца в отдельном потоке
@@ -59,6 +67,7 @@ class PetProfileScreen(Screen):
         owner_email = self.text_inputs['owner_name'].text
         pet_birthday = self.date_picker_input.text
         image_path = self.image.source  # добавить путь к изображению
+        pet_type = self.pet_type_spinner.text  # добавить тип питомца
 
         data = {
             'email': email,
@@ -66,7 +75,8 @@ class PetProfileScreen(Screen):
             'pet_breed': pet_breed,
             'owner_email': owner_email,
             'pet_birthday': pet_birthday,
-            'image_path': image_path  # добавить путь к изображению
+            'image_path': image_path,  # добавить путь к изображению
+            'pet_type': pet_type  # добавить тип питомца
         }
 
         response = requests.post('http://localhost:5000/save_pet_profile', json=data)
@@ -74,6 +84,18 @@ class PetProfileScreen(Screen):
             print("Профиль питомца успешно сохранен!")
         else:
             print(f"Ошибка сохранения профиля питомца: {response.status_code}")
+
+    def clear_fields(self):
+        # Очистить текстовые поля
+        for text_input in self.text_inputs.values():
+            text_input.text = ''
+
+        # Очистить выпадающий список
+        self.pet_type_spinner.text = 'Выбирите тип питомца'
+
+        # Очистить изображение
+        self.image.source = 'cat-defolt.png'
+
 
     def __init__(self, **kwargs):
         super(PetProfileScreen, self).__init__(**kwargs)
@@ -84,8 +106,19 @@ class PetProfileScreen(Screen):
         self.image.bind(on_release=self.open_file_chooser)
         self.layout.add_widget(self.image)
 
-        self.info_layout = BoxLayout(orientation='vertical', size_hint=(1, 0.8), padding=[10, 20, 10, 20], spacing=30)
+        self.info_layout = BoxLayout(orientation='vertical', size_hint=(1, 0.8), padding=[10, 20, 10, 20], spacing=20)
         self.layout.add_widget(self.info_layout)
+
+        self.pet_type_spinner = Spinner(
+            # доступные значения
+            values=('Кот', 'Собака'),
+            # первоначально выбранное значение
+            text='Выбирите тип питомца',
+            # размер
+            size_hint=(1, None),
+            height=30
+        )
+        self.info_layout.add_widget(self.pet_type_spinner)
 
         self.text_inputs['pet_name'] = self.create_textinput('Кличка питомца:')
         print("Поле 'pet_name' инициализировано")

@@ -59,12 +59,13 @@ def pet_profile():
     conn.close()
     if pet_profile:
         # Преобразовать кортеж в словарь
-        keys = ['owner_email', 'pet_name', 'pet_breed', 'pet_birthday', 'image_path']
+        keys = ['owner_email', 'pet_name', 'pet_breed', 'pet_birthday', 'image_path', 'pet_type']  # Добавьте 'pet_type'
         pet_profile_dict = dict(zip(keys, pet_profile))
         print(pet_profile_dict)
         return jsonify(pet_profile_dict), 200
     else:
         return jsonify({"error": "Pet profile not found"}), 404
+
 
 @app.route('/save_pet_profile', methods=['POST'])
 def save_pet_profile():
@@ -75,12 +76,13 @@ def save_pet_profile():
     owner_email = data.get('owner_email')  # Используйте owner_email
     pet_birthday = data.get('pet_birthday')  # Добавьте pet_birthday
     image_path = data.get('image_path')  # Добавьте image_path
+    pet_type = data.get('pet_type')  # Добавьте тип питомца
 
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
     # Обновить запись в базе данных
-    c.execute("UPDATE pet_profiles SET pet_name = ?, pet_breed = ?, pet_birthday = ?, image_path = ?, owner_email = ? WHERE owner_email = ?",
-              (pet_name, pet_breed, pet_birthday, image_path, owner_email, email))  # Добавьте pet_birthday и image_path
+    c.execute("UPDATE pet_profiles SET pet_name = ?, pet_breed = ?, pet_birthday = ?, image_path = ?, owner_email = ?, pet_type = ? WHERE owner_email = ?",
+              (pet_name, pet_breed, pet_birthday, image_path, owner_email, pet_type, email))  # Добавьте pet_type
     conn.commit()
     conn.close()
 
