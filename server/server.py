@@ -88,6 +88,21 @@ def save_pet_profile():
 
     return jsonify({"message": "Pet profile updated successfully"}), 200
 
+@app.route('/save_last_feed', methods=['POST'])
+def save_last_feed():
+    data = request.get_json()
+    email = data.get('email')
+    last_feed = data.get('last_feed')
+
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+
+    # Обновить запись в базе данных
+    c.execute("UPDATE pet_profiles SET last_feed = ? WHERE owner_email = ?", (last_feed, email))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Last feed time updated successfully"}), 200
 
 
 if __name__ == '__main__':
