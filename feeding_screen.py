@@ -14,6 +14,7 @@ from kivy.clock import Clock
 from kivy.uix.spinner import Spinner
 from kivy.uix.widget import Widget
 from datetime import datetime, timedelta
+from kivymd.uix.dialog import MDDialog
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -128,7 +129,7 @@ class FeedingScreen(Screen):
             amount_dry = round(amount_dry, 2)
 
                 # Заполнение поля "Рекомендованое питание:" информацией о корме
-            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал'))
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал, разбить на 3-4 кормежки'))
 
         elif pet_type == 'Собака':
             # Добавить логику для расчета корма для собак
@@ -152,7 +153,7 @@ class FeedingScreen(Screen):
             amount_dry = round(amount_dry, 2)
 
             # Заполнение поля "Рекомендованое питание:" информацией о корме
-            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал'))
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал, разбить на 1-2 кормёжки'))
 
     def update_food_text(self, text):
         self.text_inputs['food'].text = text
@@ -160,6 +161,13 @@ class FeedingScreen(Screen):
     def feed_pet(self, instance):
         # Запустите функцию send_feed_request в отдельном потоке
         threading.Thread(target=self.send_feed_request).start()
+        Clock.schedule_once(lambda dt: self.show_alert_dialog("Информация обновлена успешно!"))
+    def show_alert_dialog(self, text):
+        self.dialog = MDDialog(title='Уведомление', text=text, size_hint=(0.8, 1),
+                          buttons=[MDRaisedButton(text='ОК', on_release=self.close_dialog)])
+        self.dialog.open()
+    def close_dialog(self, instance):
+        self.dialog.dismiss()
         
 
     def send_feed_request(self):

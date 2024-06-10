@@ -12,6 +12,7 @@ from kivymd.uix.button import MDRaisedButton
 import threading
 from kivy.clock import Clock
 from kivy.uix.spinner import Spinner
+from kivymd.uix.dialog import MDDialog
 
 class ImageButton(ButtonBehavior, Image):
     pass
@@ -83,6 +84,13 @@ class PetProfileScreen(Screen):
             print("Профиль питомца успешно сохранен!")
         else:
             print(f"Ошибка сохранения профиля питомца: {response.status_code}")
+        Clock.schedule_once(lambda dt: self.show_alert_dialog("Информация обновлена успешно!"))
+    def show_alert_dialog(self, text):
+        self.dialog = MDDialog(title='Уведомление', text=text, size_hint=(0.8, 1),
+                          buttons=[MDRaisedButton(text='ОК', on_release=self.close_dialog)])
+        self.dialog.open()
+    def close_dialog(self, instance):
+        self.dialog.dismiss()
 
     def clear_fields(self):
         # Очистить текстовые поля
@@ -109,7 +117,7 @@ class PetProfileScreen(Screen):
             # доступные значения
             values=('Кот', 'Собака'),
             # первоначально выбранное значение
-            text='Выбирите тип питомца',
+            text='Выберите тип питомца',
             # размер
             size_hint=(1, None),
             height=30

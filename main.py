@@ -44,7 +44,7 @@ class MainApp(MDApp):
         self.theme_cls.primary_palette = "Orange"
 
         list_drawer = MDList()
-        button_names = ['Профиль питомца', 'График питания', 'Советы на особый случай', 'Выйти из аккаунта']
+        button_names = ['Профиль питомца', 'График питания', 'Советы на ЧП', 'Выйти из аккаунта']
         icons = ['cat', 'bowl','information', 'logout']  # Примеры иконок
 
         buttons = []

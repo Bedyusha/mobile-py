@@ -128,7 +128,7 @@ class LoginScreen(Screen):
             Clock.schedule_once(lambda dt: self.show_alert_dialog("Успешная авторизация!"))
             Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'pet_profile'))
         else:
-            Clock.schedule_once(lambda dt: self.show_alert_dialog("Ошибка авторизации!"))
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Ошибка авторизации! Неверный логин или пароль."))
 
     def on_register_press(self, instance):
         # Переключаемся на экран регистрации
