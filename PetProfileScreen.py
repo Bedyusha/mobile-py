@@ -63,7 +63,12 @@ class PetProfileScreen(Screen):
     def save_pet_profile_thread(self, instance):
         email = MDApp.get_running_app().user_email
         pet_name = self.text_inputs['pet_name'].text
-        pet_weight = int(self.text_inputs['pet_weight'].text)
+        pet_weight_text = self.text_inputs['pet_weight'].text
+        if pet_weight_text:  # Проверить, что строка не пустая
+            pet_weight = int(pet_weight_text)
+        else:
+            # Здесь вы можете установить значение по умолчанию или показать сообщение об ошибке
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Ошибка сохранения данных, некоректное значение"))
         owner_email = self.text_inputs['owner_name'].text
         pet_birthday = self.date_picker_input.text
         image_path = self.image.source  # добавить путь к изображению
@@ -82,9 +87,13 @@ class PetProfileScreen(Screen):
         response = requests.post('http://localhost:5000/save_pet_profile', json=data)
         if response.status_code == 200:
             print("Профиль питомца успешно сохранен!")
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Информация обновлена успешно!"))
         else:
             print(f"Ошибка сохранения профиля питомца: {response.status_code}")
-        Clock.schedule_once(lambda dt: self.show_alert_dialog("Информация обновлена успешно!"))
+            Clock.schedule_once(lambda dt: self.show_alert_dialog("Ошибка сохранения данных, некоректное значение"))
+
+
+
     def show_alert_dialog(self, text):
         self.dialog = MDDialog(title='Уведомление', text=text, size_hint=(0.8, 1),
                           buttons=[MDRaisedButton(text='ОК', on_release=self.close_dialog)])
@@ -125,15 +134,13 @@ class PetProfileScreen(Screen):
         self.info_layout.add_widget(self.pet_type_spinner)
 
         self.text_inputs['pet_name'] = self.create_textinput('Кличка питомца:')
-        print("Поле 'pet_name' инициализировано")
 
         self.text_inputs['pet_weight'] = self.create_textinput('Вес питомца(граммы):')
         self.text_inputs['pet_weight'].input_filter = 'int'
-        print("Поле 'pet_weight' инициализировано")
 
         self.text_inputs['owner_name'] = self.create_textinput('Хозяин:')
         self.text_inputs['owner_name'].readonly = True
-        print("Поле 'owner_name' инициализировано")
+
 
         self.date_picker_input = MDTextField(hint_text='Дата рождения питомца:', size_hint=(1, None), font_size='15sp', mode="rectangle")
         self.date_picker_input.bind(on_touch_down=self.show_date_picker)

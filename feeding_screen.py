@@ -100,15 +100,24 @@ class FeedingScreen(Screen):
             calories_per_100g = float(calories_text)
         else:
             # Здесь вы можете установить значение по умолчанию или показать сообщение об ошибке
-            calories_per_100g = 0  # Значение по умолчанию
-            print("Пожалуйста, введите калорийность корма.")
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Укажите калорийность корма'))
+            calories_per_100g = 0
 
         # Преобразование веса из грамм в килограммы
-        pet_weight_kg = pet_weight / 1000
+        if pet_weight:  # Проверить, что строка не пустая
+            pet_weight_kg = int(pet_weight) / 1000
+        else:
+            # Здесь вы можете установить значение по умолчанию или показать сообщение об ошибке
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Неизвестный вес питомца'))
 
-        birthday = datetime.strptime(pet_birthday, '%Y-%m-%d')
-        now = datetime.now()
-        pet_age_months = (now.year - birthday.year) * 12 + now.month - birthday.month
+        if pet_birthday:  # Проверить, что строка не пустая
+            birthday = datetime.strptime(pet_birthday, '%Y-%m-%d')
+            now = datetime.now()
+            pet_age_months = (now.year - birthday.year) * 12 + now.month - birthday.month
+        else:
+            # Здесь вы можете установить значение по умолчанию или показать сообщение об ошибке
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Неизвестная дата рождения'))
+            pet_age_months = 0  # Значение по умолчанию
 
      # Определение типа и количества корма на основе веса и возраста питомца
         if pet_type == 'Кот':
@@ -154,7 +163,8 @@ class FeedingScreen(Screen):
 
             # Заполнение поля "Рекомендованое питание:" информацией о корме
             Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал, разбить на 1-2 кормёжки'))
-
+        else:
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Неизвестный тип питомца'))
     def update_food_text(self, text):
         self.text_inputs['food'].text = text
 
