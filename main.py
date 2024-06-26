@@ -1,9 +1,9 @@
 from kivymd.uix.button import MDRaisedButton
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager
 from kivymd.app import MDApp
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.navigationdrawer import MDNavigationDrawer, MDNavigationLayout
-from kivymd.uix.list import MDList, OneLineListItem
+from kivymd.uix.list import MDList
 from kivymd.uix.button import MDIconButton
 from kivy.utils import get_color_from_hex
 from kivy.core.window import Window
@@ -13,19 +13,19 @@ from kivy.resources import resource_add_path
 from kivymd.uix.dialog import MDDialog
 import sqlite3
 from kivymd.uix.list import OneLineIconListItem
-from kivymd.icon_definitions import md_icons
 from kivymd.uix.list import IconLeftWidget
 # Импорты основных окон
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
 from feeding_screen import FeedingScreen
-from training_screen import TrainingScreen
 from login_screen import LoginScreen
 from registration_screen import RegistrationScreen  # Добавьте импорт экрана регистрации
 # Импорты окон совета advice_screen
 from advice.birth_screen_cat import BirthScreen
 from advice.teeth import Teeth
 from advice.tick_bite import Tick_bite
+from advice.vomit import Vomit
+from advice.nail_trimming import Nail
 
 LabelBase.register(name='Ubuntu',
                    fn_regular='fonts\\Ubuntu-Regular.ttf',
@@ -77,10 +77,6 @@ class MainApp(MDApp):
             sm.current = 'feeding_screen'
         buttons[1].bind(on_release=switch_to_feeding_screen)
 
-        # def switch_to_training_screen(*args):
-        #     sm.current = 'training_screen'
-        # buttons[2].bind(on_release=switch_to_training_screen)
-
         # Привязываем кнопку "Советы на особый случай" к переключению на экран советов
         def switch_to_advice_screen(*args):
             sm.current = 'advice'
@@ -100,9 +96,6 @@ class MainApp(MDApp):
 
         notification_screen = FeedingScreen(name = 'feeding_screen')
         sm.add_widget(notification_screen)
-        
-        # notification_screen = TrainingScreen(name = 'training_screen')
-        # sm.add_widget(notification_screen)
 
         advice_screen = AdviceScreen(name='advice')
         sm.add_widget(advice_screen)
@@ -116,7 +109,7 @@ class MainApp(MDApp):
             CREATE TABLE IF NOT EXISTS sessioninfo (
                 id INTEGER PRIMARY KEY,
                 user_email TEXT
-            )
+            )   
         ''')
 
         # Получить email пользователя из базы данных
@@ -144,6 +137,12 @@ class MainApp(MDApp):
 
         tick_bite = Tick_bite(name='tick_bite')
         sm.add_widget(tick_bite)
+
+        vomit = Vomit(name='vomit')
+        sm.add_widget(vomit)
+
+        nail = Nail(name='nail')
+        sm.add_widget(nail)
 ######окна советов
 
         # Создаем MDNavigationLayout и добавляем в него ScreenManager и NavigationDrawer

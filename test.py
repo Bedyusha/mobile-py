@@ -16,7 +16,6 @@ from kivymd.uix.bottomnavigation import MDBottomNavigation, MDBottomNavigationIt
 from advice_screen import AdviceScreen
 from PetProfileScreen import PetProfileScreen
 from feeding_screen import FeedingScreen
-from training_screen import TrainingScreen
 from login_screen import LoginScreen
 
 class MainApp(MDApp):
@@ -32,7 +31,6 @@ class MainApp(MDApp):
         items = [
             {"name": "Профиль\nпитомца", "icon": "cat","screen": PetProfileScreen(name='pet_profile')},
             {"name": "График\nпитания", "icon": "bowl","screen": FeedingScreen(name='feeding_screen')},
-            {"name": "Дресировка", "icon": "dog-side", "screen": TrainingScreen(name='training_screen')},
             {"name": "Советы", "icon": "help-circle", "screen": AdviceScreen(name='advice') },
             {"name": "Выйти", "icon": "menu", "screen": LoginScreen(name='login')}, 
         ]

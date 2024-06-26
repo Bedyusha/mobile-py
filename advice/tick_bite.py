@@ -10,7 +10,7 @@ from kivy.uix.widget import Widget
 class Tick_bite(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.layout = BoxLayout(orientation='vertical', padding=[10, 20, 10, 10])
+        self.layout = BoxLayout(orientation='vertical', padding=[10, 10, 10, 10])
         self.add_widget(self.layout)
 
         self.label = MDLabel(
@@ -18,7 +18,7 @@ class Tick_bite(Screen):
             theme_text_color="Secondary",
             font_style="H5",
             size_hint=(1, None),
-            height="24dp"
+            height="44dp"
         )
         self.layout.add_widget(self.label)
 

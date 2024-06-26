@@ -7,7 +7,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.animation import Animation
 from kivy.uix.widget import Widget
 
-class Vomit(Screen):
+class Nail(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical', padding=[10, 10, 10, 10])
@@ -62,9 +62,9 @@ class Vomit(Screen):
 
         # Определите информацию о шагах
         self.steps = {
-            1: {"image": 'img\\vomit\\шаг1.png', "text": "Шаг 1: Рвота может быть вызвана многими причинами и не всегда является признаком серьезного заболевания. Однако, если рвота продолжается или сопровождается другими симптомами, такими как диарея, апатия или потеря аппетита, следует немедленно обратиться к ветеринару. ", "title": "Рвота у питомца", "button": "Далее"},
-            2: {"image": 'img\\vomit\\шаг2.png', "text": "Шаг 2: Обратите внимание на частоту рвоты, наличие крови или необычных веществ в рвотных массах. Это может помочь ветеринару определить причину рвоты.", "title": "Рвота у питомца", "button": "Далее"},
-            3: {"image": 'img\\vomit\\шаг3.png', "text": "Шаг 3: Если рвота продолжается более 24 часов или сопровождается другими симптомами, обратитесь к ветеринару.", "title": "Рвота у питомца", "button": "Выход"},
+            1: {"image": 'img\\1.png', "text": "Шаг 1: ", "title": "НАЗВАНИЕ", "button": "Далее"},
+            2: {"image": 'img\\2.png', "text": "Шаг 2: ", "title": "НАЗВАНИЕ", "button": "Далее"},
+            3: {"image": 'img\\3.png', "text": "Шаг 3: ", "title": "НАЗВАНИЕ", "button": "Выход"},
             # Добавьте больше шагов по мере необходимости
         }
 

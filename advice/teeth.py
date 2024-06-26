@@ -10,7 +10,7 @@ from kivy.uix.widget import Widget
 class Teeth(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.layout = BoxLayout(orientation='vertical', padding=[10, 50, 10, 10])
+        self.layout = BoxLayout(orientation='vertical', padding=[10, 10, 10, 10])
         self.add_widget(self.layout)
 
         self.label = MDLabel(
@@ -18,7 +18,7 @@ class Teeth(Screen):
             theme_text_color="Secondary",
             font_style="H5",
             size_hint=(1, None),
-            height="24dp"
+            height="44dp"
         )
         self.layout.add_widget(self.label)
 
@@ -29,8 +29,8 @@ class Teeth(Screen):
             halign="center",
             theme_text_color="Secondary",
             font_style="Body1",
-            size_hint=(1, None),
-            #height="48dp"
+            height="20dp"
+            
         )
         self.layout.add_widget(self.text)
 
@@ -62,9 +62,9 @@ class Teeth(Screen):
 
         # Определите информацию о шагах
         self.steps = {
-            1: {"image": 'img\\1.png', "text": "Текст шага 1", "title": "Выпадение зубов", "button": "Далее"},
-            2: {"image": 'img\\2.png', "text": "Текст шага 2", "title": "Выпадение зубов", "button": "Далее"},
-            3: {"image": 'img\\3.png', "text": "Текст шага 3", "title": "Выпадение зубов", "button": "Выход"},
+            1: {"image": 'img\\teeth\\шаг1.png', "text": "Шаг 1: Определение причины. Если ваш питомец еще молод, то скорее всего, он просто меняет зубы. У щенков это происходит в возрасте от 4 до 6 месяцев, а у котят - от 3 до 7 месяцев. ", "title": "Выпадение зубов", "button": "Далее"},
+            2: {"image": 'img\\teeth\\шаг2.png', "text": "Шаг 2: Поводы обратится в ветеринару. Если ваш питомец взрослый и у него выпадают зубы, это может быть признаком заболевания десен или других проблем со здоровьем, если у вашего питомца также наблюдаются симптомы, такие как слюнотечение, отказ от еды, кровотечение изо рта или наличие больших зубов, обратитесь к ветеринару. ", "title": "Выпадение зубов", "button": "Далее"},
+            3: {"image": 'img\\teeth\\шаг3.png', "text": "Шаг 3: Рекомендации по уходу. Регулярно чистите зубы вашего питомца специальной зубной щеткой и зубной пастой для животных. Это поможет предотвратить заболевания десен и сохранит зубы вашего питомца здоровыми", "title": "Выпадение зубов", "button": "Выход"},
             # Добавьте больше шагов по мере необходимости
         }
 

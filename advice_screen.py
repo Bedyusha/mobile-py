@@ -38,7 +38,7 @@ class AdviceScreen(Screen):
         self.scroll_view.add_widget(self.list_layout)
         layout.add_widget(self.scroll_view)
 
-        self.items = ["Роды питомца", "Выпадение зубов", "Укус клеща", "Рвота у питомца", "Стрижка когтей"]
+        self.items = ["Подготовка к родам кошки", "Выпадение зубов", "Укус клеща", "Рвота у питомца", "Стрижка когтей"]
         self.buttons = {}  # словарь для хранения ссылок на кнопки
         self.update_list()
 
@@ -55,9 +55,13 @@ class AdviceScreen(Screen):
                 self.buttons[item] = list_item  # сохраняем ссылку на кнопку
 
     def change_screen(self, instance):
-        if instance.text == "Роды питомца":
+        if instance.text == "Подготовка к родам кошки":
             self.manager.current = 'birth_screen_cat'
         if instance.text == "Выпадение зубов":
             self.manager.current = 'teeth'
         if instance.text == "Укус клеща":
             self.manager.current = 'tick_bite'
+        if instance.text == "Рвота у питомца":
+            self.manager.current = 'vomit'
+        if instance.text == "Стрижка когтей":
+            self.manager.current = 'nail'

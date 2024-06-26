@@ -138,7 +138,7 @@ class FeedingScreen(Screen):
             amount_dry = round(amount_dry, 2)
 
                 # Заполнение поля "Рекомендованое питание:" информацией о корме
-            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал, разбить на 3-4 кормежки'))
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал'))
 
         elif pet_type == 'Собака':
             # Добавить логику для расчета корма для собак
@@ -162,7 +162,7 @@ class FeedingScreen(Screen):
             amount_dry = round(amount_dry, 2)
 
             # Заполнение поля "Рекомендованое питание:" информацией о корме
-            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал, разбить на 1-2 кормёжки'))
+            Clock.schedule_once(lambda dt: self.update_food_text( f'Сухой корм: {amount_dry} г, {daily_calories} ккал'))
         else:
             Clock.schedule_once(lambda dt: self.update_food_text( f'Неизвестный тип питомца'))
     def update_food_text(self, text):
